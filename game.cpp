@@ -10,7 +10,7 @@ void Game::start() {
 
         int x, y;
 
-        std::cout << "Player " << currentPlayer->getColor() << ", enter your move (row and column): ";
+        std::cout << "Player " << currentPlayer->getColor() << ", enter move (row and column): ";
         std::cin >> x >> y;
 
         if (board.move(x, y, currentPlayer->getColor())) {
