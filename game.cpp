@@ -1,7 +1,7 @@
 #include "Game.h"
 #include <iostream>
 
-Game::Game() : player1('B'), player2('W'), currentPlayer(&player1)
+Game::Game() : playerA('B'), playerB('W'), currentPlayer(&playerA)
 {
 }
 
@@ -36,5 +36,5 @@ bool Game::isGameOver()
 
 void Game::switchTurn()
 {
-    currentPlayer = (currentPlayer == &player1) ? &player2 : &player1;
+    currentPlayer = (currentPlayer == &playerA) ? &playerB : &playerA;
 }
