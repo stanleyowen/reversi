@@ -8,7 +8,7 @@ private:
 
 public:
     Player(char color);
-    char getColor();
+    char getColor() const { return color; };
 };
 
 #endif // Player_H

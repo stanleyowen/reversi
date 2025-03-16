@@ -15,6 +15,7 @@ private:
     Player playerA;
     Player playerB;
     Player *currentPlayer;
+
     bool isGameOver();
     void switchTurn();
 };
