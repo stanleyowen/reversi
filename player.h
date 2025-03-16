@@ -1,12 +1,14 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef Player_H
+#define Player_H
 
-class Player {
+class Player
+{
+private:
+    char color;
+
 public:
     Player(char color);
     char getColor();
-private:
-    char color;
 };
 
-#endif
+#endif // Player_H

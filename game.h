@@ -1,20 +1,22 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef Game_H
+#define Game_H
 
-#include "board.h"
-#include "player.h"
+#include "Board.h"
+#include "Player.h"
 
-class Game {
+class Game
+{
 public:
     Game();
     void start();
+
 private:
     Board board;
-    Player player1;
-    Player player2;
-    Player* currentPlayer;
+    Player playerA;
+    Player playerB;
+    Player *currentPlayer;
     bool isGameOver();
     void switchTurn();
 };
 
-#endif
+#endif // Game_H

@@ -1,11 +1,14 @@
-#include "game.h"
+#include "Game.h"
 #include <iostream>
 
-Game::Game() : player1('B'), player2('W'), currentPlayer(&player1) {
+Game::Game() : player1('B'), player2('W'), currentPlayer(&player1)
+{
 }
 
-void Game::start() {
-    while (!isGameOver()) {
+void Game::start()
+{
+    while (!isGameOver())
+    {
         board.display();
 
         int x, y;
@@ -13,9 +16,12 @@ void Game::start() {
         std::cout << "Player " << currentPlayer->getColor() << ", enter move (row and column): ";
         std::cin >> x >> y;
 
-        if (board.move(x, y, currentPlayer->getColor())) {
+        if (board.move(x, y, currentPlayer->getColor()))
+        {
             switchTurn();
-        } else {
+        }
+        else
+        {
             std::cout << "Invalid move. Try again." << std::endl;
         }
     }
@@ -23,10 +29,12 @@ void Game::start() {
     std::cout << "Game Over!" << std::endl;
 }
 
-bool Game::isGameOver() {
+bool Game::isGameOver()
+{
     return false;
 }
 
-void Game::switchTurn() {
+void Game::switchTurn()
+{
     currentPlayer = (currentPlayer == &player1) ? &player2 : &player1;
 }
