@@ -20,7 +20,6 @@ void Board::display()
 {
     // Similar to std::system("cls") but work on Linux and Windows
     std::cout << "\033[2J\033[1;1H";
-
     std::cout << "  0 1 2 3 4 5 6 7" << std::endl;
 
     for (int i = 0; i < 8; ++i)
@@ -34,36 +33,47 @@ void Board::display()
     }
 }
 
-bool Board::move(int x, int y, char color)
+bool Board::move(int x, int y, char color, bool isTest)
 {
     if (x < 0 || x >= 8 || y < 0 || y >= 8 || board[y][x] != ' ')
     {
         return false;
     }
-
-    board[y][x] = color;
-
-    flip(x, y, color);
-
-    return true;
+    return flip(x, y, color, isTest);
 }
 
-void Board::flip(int x, int y, char color)
+// Function to flip the opponent's pieces
+// Returns true if any pieces were flipped, false otherwise
+bool Board::flip(int x, int y, char color, bool isTest)
 {
+    // Create a copy of the board to avoid modifying the original during the check
+    char tempBoard[8][8];
+
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            tempBoard[i][j] = board[i][j];
+        }
+    }
+    tempBoard[y][x] = color;
+
     char opponentColor = (color == 'W') ? 'B' : 'W';
+    int flipCount = 0;
 
     // Check up direction
     for (int i = y - 1; i >= 0; i--)
     {
-        if (board[i][x] == color)
+        if (tempBoard[i][x] == color)
         {
             for (int j = y - 1; j > i; j--)
             {
-                board[j][x] = color;
+                tempBoard[j][x] = color;
+                flipCount++;
             }
             break;
         }
-        else if (board[i][x] == BOARD_SPACE)
+        else if (tempBoard[i][x] == BOARD_SPACE)
         {
             break;
         }
@@ -72,15 +82,16 @@ void Board::flip(int x, int y, char color)
     // Check down direction
     for (int i = y + 1; i < 8; i++)
     {
-        if (board[i][x] == color)
+        if (tempBoard[i][x] == color)
         {
             for (int j = y + 1; j < i; j++)
             {
-                board[j][x] = color;
+                tempBoard[j][x] = color;
+                flipCount++;
             }
             break;
         }
-        else if (board[i][x] == BOARD_SPACE)
+        else if (tempBoard[i][x] == BOARD_SPACE)
         {
             break;
         }
@@ -89,15 +100,16 @@ void Board::flip(int x, int y, char color)
     // Check left direction
     for (int i = x - 1; i >= 0; i--)
     {
-        if (board[y][i] == color)
+        if (tempBoard[y][i] == color)
         {
             for (int j = x - 1; j > i; j--)
             {
-                board[y][j] = color;
+                tempBoard[y][j] = color;
+                flipCount++;
             }
             break;
         }
-        else if (board[y][i] == BOARD_SPACE)
+        else if (tempBoard[y][i] == BOARD_SPACE)
         {
             break;
         }
@@ -106,15 +118,16 @@ void Board::flip(int x, int y, char color)
     // Check right direction
     for (int i = x + 1; i < 8; i++)
     {
-        if (board[y][i] == color)
+        if (tempBoard[y][i] == color)
         {
             for (int j = x + 1; j < i; j++)
             {
-                board[y][j] = color;
+                tempBoard[y][j] = color;
+                flipCount++;
             }
             break;
         }
-        else if (board[y][i] == BOARD_SPACE)
+        else if (tempBoard[y][i] == BOARD_SPACE)
         {
             break;
         }
@@ -131,32 +144,30 @@ void Board::flip(int x, int y, char color)
     {
         tempX--;
         tempY--;
-        std::cout << "Checking up-left direction: " << tempX << " " << tempY << " " << board[tempY][tempX] << std::endl;
         if (tempX < 0 || tempY < 0)
         {
             break;
         }
-        if (board[tempY][tempX] == color)
+        if (tempBoard[tempY][tempX] == color)
         {
             while (tempX < 8 && tempY < 8)
             {
                 tempX++;
                 tempY++;
 
-                std::cout << "Checking up-left direction: " << tempX << " " << tempY << std::endl;
-
                 // Stop if we reach the same color
-                if (board[tempY][tempX] == color)
+                if (tempBoard[tempY][tempX] == color)
                 {
                     break;
                 }
                 // Flip the opponent color during the way back
-                board[tempY][tempX] = color;
+                tempBoard[tempY][tempX] = color;
+                flipCount++;
             }
 
             break;
         }
-        else if (board[tempY][tempX] == BOARD_SPACE)
+        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
         {
             break;
         }
@@ -174,27 +185,27 @@ void Board::flip(int x, int y, char color)
         {
             break;
         }
-        if (board[tempY][tempX] == color)
+        if (tempBoard[tempY][tempX] == color)
         {
-            std::cout << "Found the same color!" << std::endl;
+            std::cout << "tempX: " << tempX << ", tempY: " << tempY << std::endl;
             while (tempX >= 0 && tempY < 8)
             {
                 tempX--;
                 tempY++;
 
-                std::cout << "Checking up-right direction: " << tempX << " " << tempY << std::endl;
                 // Stop if we reach the same color
-                if (board[tempY][tempX] == color)
+                if (tempBoard[tempY][tempX] == color)
                 {
                     break;
                 }
                 // Flip the opponent color during the way back
-                board[tempY][tempX] = color;
+                tempBoard[tempY][tempX] = color;
+                flipCount++;
             }
 
             break;
         }
-        else if (board[tempY][tempX] == BOARD_SPACE)
+        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
         {
             break;
         }
@@ -212,7 +223,7 @@ void Board::flip(int x, int y, char color)
         {
             break;
         }
-        if (board[tempY][tempX] == color)
+        if (tempBoard[tempY][tempX] == color)
         {
             while (tempX < 8 && tempY >= 0)
             {
@@ -220,17 +231,18 @@ void Board::flip(int x, int y, char color)
                 tempY--;
 
                 // Stop if we reach the same color
-                if (board[tempY][tempX] == color)
+                if (tempBoard[tempY][tempX] == color)
                 {
                     break;
                 }
                 // Flip the opponent color during the way back
-                board[tempY][tempX] = color;
+                tempBoard[tempY][tempX] = color;
+                flipCount++;
             }
 
             break;
         }
-        else if (board[tempY][tempX] == BOARD_SPACE)
+        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
         {
             break;
         }
@@ -249,7 +261,7 @@ void Board::flip(int x, int y, char color)
         {
             break;
         }
-        if (board[tempY][tempX] == color)
+        if (tempBoard[tempY][tempX] == color)
         {
             while (tempX >= 0 && tempY >= 0)
             {
@@ -257,21 +269,47 @@ void Board::flip(int x, int y, char color)
                 tempY--;
 
                 // Stop if we reach the same color
-                if (board[tempY][tempX] == color)
+                if (tempBoard[tempY][tempX] == color)
                 {
                     break;
                 }
                 // Flip the opponent color during the way back
-                board[tempY][tempX] = color;
+                tempBoard[tempY][tempX] = color;
+                flipCount++;
             }
 
             break;
         }
-        else if (board[tempY][tempX] == BOARD_SPACE)
+        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
         {
             break;
         }
     }
 
-    std::cout << "Flipping completed!" << std::endl;
+    // Check if any pieces were flipped
+    if (flipCount > 0)
+    {
+        // Only update the board if not in test mode
+        if (!isTest)
+        {
+            // Otherwise, update the board with the flipped pieces
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    if (tempBoard[i][j] != board[i][j])
+                    {
+                        board[i][j] = tempBoard[i][j];
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+    // If no pieces were flipped, flag the move as invalid
+    else
+    {
+        return false;
+    }
 }
