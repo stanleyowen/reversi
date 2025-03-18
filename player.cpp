@@ -1,7 +1,7 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player(char color) : color(color)
+Player::Player(char color) : color(color), score(0)
 {
     if (color != 'B' && color != 'W')
     {

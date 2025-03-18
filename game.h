@@ -18,6 +18,8 @@ private:
 
     bool isGameOver();
     void switchTurn();
+    void countPieces();
+    void displayWinner();
 };
 
 #endif // Game_H

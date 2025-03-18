@@ -27,6 +27,8 @@ void Game::start()
     }
 
     std::cout << "Game Over!" << std::endl;
+    board.display();
+    displayWinner();
 }
 
 bool Game::isGameOver()
@@ -43,6 +45,44 @@ bool Game::isGameOver()
         }
     }
     return true;
+}
+
+void Game::countPieces()
+{
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.getBoard()[i][j] == playerA.getColor())
+            {
+                playerA.incrementScore();
+            }
+            else if (board.getBoard()[i][j] == playerB.getColor())
+            {
+                playerB.incrementScore();
+            }
+        }
+    }
+}
+
+void Game::displayWinner()
+{
+    countPieces();
+    std::cout << "Player A (B) Score: " << playerA.getScore() << std::endl;
+    std::cout << "Player B (W) Score: " << playerB.getScore() << std::endl;
+
+    if (playerA.getScore() > playerB.getScore())
+    {
+        std::cout << "Player A wins!" << std::endl;
+    }
+    else if (playerB.getScore() > playerA.getScore())
+    {
+        std::cout << "Player B wins!" << std::endl;
+    }
+    else
+    {
+        std::cout << "It's a tie!" << std::endl;
+    }
 }
 
 void Game::switchTurn()
