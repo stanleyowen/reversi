@@ -31,7 +31,18 @@ void Game::start()
 
 bool Game::isGameOver()
 {
-    return false;
+    // Check if the board is full or if no valid moves are available for both players
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.move(j, i, playerA.getColor(), true) || board.move(j, i, playerB.getColor(), true))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void Game::switchTurn()
