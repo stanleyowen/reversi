@@ -10,10 +10,15 @@ void Game::start()
     while (!isGameOver())
     {
         board.display();
+        checkAllPossibleMoves();
 
         int x, y;
 
-        std::cout << "Player " << currentPlayer->getColor() << ", enter move (row and column): ";
+        std::cout << "Current Player: " << currentPlayer->getColor() << "\n";
+        std::cout << "Possible Moves: ";
+        currentPlayer->displayPossibleMoves();
+        std::cout << "\n";
+        std::cout << "Enter your move (row and column): ";
         std::cin >> x >> y;
 
         if (board.move(x, y, currentPlayer->getColor()))
@@ -47,17 +52,35 @@ bool Game::isGameOver()
     return true;
 }
 
+void Game::checkAllPossibleMoves()
+{
+    // Clear previous possible moves
+    currentPlayer->clearPossibleMoves();
+
+    // Check if there are any possible moves for the current player
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (board.move(j, i, currentPlayer->getColor(), true))
+            {
+                currentPlayer->addPossibleMove(j, i);
+            }
+        }
+    }
+}
+
 void Game::countPieces()
 {
     for (int i = 0; i < 8; i++)
     {
         for (int j = 0; j < 8; j++)
         {
-            if (board.getBoard()[i][j] == playerA.getColor())
+            if (board.getBoard(i, j) == playerA.getColor())
             {
                 playerA.incrementScore();
             }
-            else if (board.getBoard()[i][j] == playerB.getColor())
+            else if (board.getBoard(i, j) == playerB.getColor())
             {
                 playerB.incrementScore();
             }
