@@ -20,6 +20,7 @@ private:
     void switchTurn();
     void countPieces();
     void displayWinner();
+    void checkAllPossibleMoves();
 };
 
 #endif // Game_H

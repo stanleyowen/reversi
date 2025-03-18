@@ -7,7 +7,7 @@ public:
     Board();
     void display();
     bool move(int x, int y, char color, bool isTest = false);
-    char **getBoard() { return (char **)board; };
+    char getBoard(int x, int y) const { return board[y][x]; }
 
 private:
     char board[8][8];

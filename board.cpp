@@ -187,7 +187,6 @@ bool Board::flip(int x, int y, char color, bool isTest)
         }
         if (tempBoard[tempY][tempX] == color)
         {
-            std::cout << "tempX: " << tempX << ", tempY: " << tempY << std::endl;
             while (tempX >= 0 && tempY < 8)
             {
                 tempX--;
