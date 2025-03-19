@@ -1,14 +1,16 @@
 #ifndef Game_H
 #define Game_H
 
+// Include necessary headers
 #include "Board.h"
 #include "Player.h"
 
 class Game
 {
 public:
-    Game();
-    void start();
+    Game();       // Default constructor to initialize the game
+    ~Game();      // TODO: Destructor to clean up resources
+    void start(); // Begin the reversi game
 
 private:
     Board board;

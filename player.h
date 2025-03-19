@@ -9,12 +9,11 @@ class Player
 private:
     char color;
     int score;
+    int possibleMovesCount;
 
     // clang-format off
     std::vector<std::vector<int> > possibleMoves;
     // clang-format on
-
-    int possibleMovesCount;
 
 public:
     Player(char color);
@@ -24,15 +23,7 @@ public:
 
     void addPossibleMove(int x, int y);
     void clearPossibleMoves();
-    void displayPossibleMoves() const
-    {
-        std::cout << "Possible moves for player " << color << ": ";
-        for (int i = 0; i < possibleMovesCount; i++)
-        {
-            std::cout << "(" << possibleMoves[i][0] << ", " << possibleMoves[i][1] << ") ";
-        }
-        std::cout << std::endl;
-    }
+    void displayPossibleMoves();
     int getPossibleMovesCount() const { return possibleMovesCount; };
 };
 
