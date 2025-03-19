@@ -1,14 +1,17 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef Board_H
+#define Board_H
 
-class Board {
+class Board
+{
 public:
     Board();
     void display();
-    bool move(int x, int y, char color);
+    bool move(int x, int y, char color, bool isTest = false);
+    char getBoard(int x, int y) const { return board[y][x]; }
+
 private:
     char board[8][8];
-    void flip(int x, int y, char color);
+    bool flip(int x, int y, char color, bool isTest = false);
 };
 
-#endif
+#endif // Board_H
