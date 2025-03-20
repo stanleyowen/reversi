@@ -21,8 +21,7 @@ void Game::start()
     {
         int posX, posY;
 
-        board.display();         // Display the current board state
-        checkAllPossibleMoves(); // Check all possible moves for the current player
+        board.display(); // Display the current board state
 
         std::cout << "Current Player: " << currentPlayer->getColor() << "\n";
         std::cout << "Possible Moves: ";
@@ -55,6 +54,22 @@ void Game::start()
 // Returns true if the game is over, false otherwise
 bool Game::isGameOver()
 {
+    checkAllPossibleMoves(); // Check all possible moves for the current player
+
+    // If the current player has no possible moves, switch to the other player
+    if (currentPlayer->getPossibleMovesCount() == 0)
+    {
+
+        switchTurn();
+        checkAllPossibleMoves(); // Check possible moves for the other player
+
+        // Check if the other player also has no possible moves
+        if (currentPlayer->getPossibleMovesCount() == 0)
+        {
+            return true; // Game is over
+        }
+    }
+
     // Check if there are any valid moves for either player
     // If there is at least one valid move, the game is not over
     for (int i = 0; i < 8; i++)
