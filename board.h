@@ -8,6 +8,7 @@ public:
     void display();
     bool move(int x, int y, char color, bool isTest = false);
     char getBoard(int x, int y) const { return board[y][x]; }
+    void setBoard(int x, int y, char a) {board[x][y] = a; };
 
 private:
     char board[8][8];
