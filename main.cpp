@@ -1,9 +1,8 @@
-#include "Game.h" // Include the Game header file
+#include "gui.h"
 
 int main()
 {
-    Game reversi;    // Create a Game object
-    reversi.start(); // Start the game
-
-    return 0;
+	GUI gui;
+	gui.run();
+	return 0;
 }

@@ -1,28 +1,37 @@
-#ifndef Game_H
-#define Game_H
+#ifndef GAME_H
+#define GAME_H
 
-// Include necessary headers
 #include "Board.h"
 #include "Player.h"
+#include <vector>
+#include <utility>
 
 class Game
 {
 public:
-    Game();       // Default constructor to initialize the game
-    ~Game();      // TODO: Destructor to clean up resources
-    void start(); // Begin the reversi game
+	Game();
+	~Game();
+
+	void start();
+	Board& getBoard();
+	bool move(int x, int y, char color);
+	bool isValidMove(int row, int col, char color) const;
+	char getCurrentPlayerColor() const;
+	void switchTurn();
+	std::vector<std::pair<int, int>> getValidMoves(char color) const;
+	void toggleShowHints();
+	void setCurrentPlayerColor(char color);
 
 private:
-    Board board;
-    Player playerA;
-    Player playerB;
-    Player *currentPlayer;
+	Board board;
+	Player playerA;
+	Player playerB;
+	Player* currentPlayer;
 
-    bool isGameOver();
-    void switchTurn();
-    void countPieces();
-    void displayWinner();
-    void checkAllPossibleMoves();
+	bool isGameOver();
+	void countPieces();
+	void displayWinner();
+	void checkAllPossibleMoves();
 };
 
-#endif // Game_H
+#endif // GAME_H

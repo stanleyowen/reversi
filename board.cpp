@@ -1,369 +1,190 @@
 #include "Board.h"
 #include <iostream>
+
 #define BOARD_SPACE ' '
 
-// Constructor to initialize the board with empty spaces and set the initial pieces
 Board::Board()
 {
-    // Initialize the board with empty spaces
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            board[i][j] = BOARD_SPACE;
-        }
-    }
+	for (int i = 0; i < 8; ++i)
+		for (int j = 0; j < 8; ++j)
+			board[i][j] = BOARD_SPACE;
 
-    // Set the initial pieces in the center of the board
-    board[3][3] = board[4][4] = 'W';
-    board[3][4] = board[4][3] = 'B';
+	board[3][3] = board[4][4] = 'W';
+	board[3][4] = board[4][3] = 'B';
+
+	showHints = false;
 }
 
-// Function to display the board
-void Board::display()
+void Board::display() const
 {
-    // Similar to std::system("cls") but work on Linux and Windows
-    std::cout << "\033[2J\033[1;1H";
-    std::cout << "  0 1 2 3 4 5 6 7" << std::endl;
+	std::cout << "\033[2J\033[1;1H";
+	std::cout << "  0 1 2 3 4 5 6 7\n";
 
-    for (int i = 0; i < 8; ++i)
-    {
-        std::cout << i << " ";
-        for (int j = 0; j < 8; ++j)
-        {
-            std::cout << board[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
+	for (int i = 0; i < 8; ++i)
+	{
+		std::cout << i << " ";
+		for (int j = 0; j < 8; ++j)
+		{
+			if (showHints && board[i][j] == BOARD_SPACE)
+			{
+				if (isValidMove(j, i, 'B') || isValidMove(j, i, 'W'))
+					std::cout << ". ";
+				else
+					std::cout << BOARD_SPACE << " ";
+			}
+			else
+			{
+				std::cout << board[i][j] << " ";
+			}
+		}
+		std::cout << "\n";
+	}
 }
 
-/// @brief Function to make a move on the board
-/// @param posX The x-coordinate where the player wants to place their piece
-/// @param posY The y-coordinate where the player wants to place their piece
-/// @param currentPlayerColor The color of the current player ('B' or 'W')
-/// @param isTest Flag to indicate if the move is a test move (default is false) for calculating possible moves
-/// @return True if the move is valid and successful, false otherwise
 bool Board::move(int posX, int posY, char currentPlayerColor, bool isTest)
 {
-    // Check if the position is within the valid range and make sure the position is empty
-    if (posX < 0 || posX >= 8 || posY < 0 || posY >= 8 || board[posY][posX] != ' ')
-    {
-        return false;
-    }
+	if (posX < 0 || posX >= 8 || posY < 0 || posY >= 8 || board[posY][posX] != BOARD_SPACE)
+		return false;
 
-    // Check if the move is valid by calling the flip function
-    return flip(posX, posY, currentPlayerColor, isTest);
+	return flip(posX, posY, currentPlayerColor, isTest);
 }
 
-// Function to flip the opponent's pieces
-// Returns true if any pieces were flipped, false otherwise
 bool Board::flip(int x, int y, char color, bool isTest)
 {
-    // Create a copy of the board to avoid modifying the original during the check
-    int flipCount = 0;
-    char tempBoard[8][8];
-    char opponentColor = (color == 'W') ? 'B' : 'W';
+	int flipCount = 0;
+	char tempBoard[8][8];
+	char opponentColor = (color == 'W') ? 'B' : 'W';
 
-    // Copy the current board state to the temporary board
-    for (int row = 0; row < 8; row++)
-    {
-        for (int col = 0; col < 8; col++)
-        {
-            tempBoard[row][col] = board[row][col];
-        }
-    }
+	for (int row = 0; row < 8; ++row)
+		for (int col = 0; col < 8; ++col)
+			tempBoard[row][col] = board[row][col];
 
-    tempBoard[y][x] = color;
+	tempBoard[y][x] = color;
 
-    // Check up direction
-    for (int i = y - 1; i >= 0; i--)
-    {
-        // Check if the current position is occupied by its own color
-        // If so, flip the pieces in between the current position and the last occupied position
-        if (tempBoard[i][x] == color)
-        {
-            for (int j = y - 1; j > i; j--)
-            {
-                tempBoard[j][x] = color;
-                flipCount++;
-            }
+	const int directions[8][2] = {
+		{-1, 0}, {1, 0}, {0, -1}, {0, 1},
+		{-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+	};
 
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[i][x] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
+	for (auto& dir : directions)
+	{
+		int dx = dir[1], dy = dir[0];
+		int nx = x + dx, ny = y + dy;
+		int pathCount = 0;
 
-    // Check down direction
-    for (int i = y + 1; i < 8; i++)
-    {
-        // Check if the current position is occupied by its own color
-        // If so, flip the pieces in between the current position and the last occupied position
-        if (tempBoard[i][x] == color)
-        {
-            for (int j = y + 1; j < i; j++)
-            {
-                tempBoard[j][x] = color;
-                flipCount++;
-            }
+		while (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && tempBoard[ny][nx] == opponentColor)
+		{
+			nx += dx;
+			ny += dy;
+			pathCount++;
+		}
 
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[i][x] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
+		if (pathCount > 0 && nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && tempBoard[ny][nx] == color)
+		{
+			// Flip pieces
+			for (int i = 1; i <= pathCount; ++i)
+			{
+				int fx = x + dx * i;
+				int fy = y + dy * i;
+				tempBoard[fy][fx] = color;
+				flipCount++;
+			}
+		}
+	}
 
-    // Check left direction
-    for (int i = x - 1; i >= 0; i--)
-    {
-        // Check if the current position is occupied by its own color
-        // If so, flip the pieces in between the current position and the last occupied position
-        if (tempBoard[y][i] == color)
-        {
-            for (int j = x - 1; j > i; j--)
-            {
-                tempBoard[y][j] = color;
-                flipCount++;
-            }
+	if (flipCount > 0)
+	{
+		if (!isTest)
+		{
+			for (int row = 0; row < 8; ++row)
+				for (int col = 0; col < 8; ++col)
+					board[row][col] = tempBoard[row][col];
+		}
+		return true;
+	}
 
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[y][i] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
+	return false;
+}
 
-    // Check right direction
-    for (int i = x + 1; i < 8; i++)
-    {
-        // Check if the current position is occupied by its own color
-        // If so, flip the pieces in between the current position and the last occupied position
-        if (tempBoard[y][i] == color)
-        {
-            for (int j = x + 1; j < i; j++)
-            {
-                tempBoard[y][j] = color;
-                flipCount++;
-            }
+void Board::toggleShowHints()
+{
+	showHints = !showHints;
+}
 
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[y][i] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
+std::vector<std::pair<int, int>> Board::getValidMoves(char currentPlayerColor) const
+{
+	std::vector<std::pair<int, int>> validMoves;
 
-    // Copy the current x and y to avoid changing the original values
-    int tempX = x;
-    int tempY = y;
+	for (int y = 0; y < 8; ++y)
+	{
+		for (int x = 0; x < 8; ++x)
+		{
+			if (board[y][x] == BOARD_SPACE && isValidMove(x, y, currentPlayerColor))
+			{
+				validMoves.emplace_back(x, y);
+			}
+		}
+	}
 
-    // Diagonal check
-    // Check up-left direction
-    while (true)
-    {
-        tempX--;
-        tempY--;
+	return validMoves;
+}
 
-        // Break if out of bounds
-        if (tempX < 0 || tempY < 0)
-        {
-            break;
-        }
+bool Board::isValidMove(int x, int y, char color) const
+{
+	if (x < 0 || x >= 8 || y < 0 || y >= 8 || board[y][x] != BOARD_SPACE)
+		return false;
 
-        // Check if the current position is occupied by its own color
-        if (tempBoard[tempY][tempX] == color)
-        {
-            // Flip the pieces in between the current position and the last occupied position
-            while (tempX < 8 && tempY < 8)
-            {
-                tempX++;
-                tempY++;
+	const int directions[8][2] = {
+		{-1, 0}, {1, 0}, {0, -1}, {0, 1},
+		{-1, -1}, {-1, 1}, {1, -1}, {1, 1}
+	};
 
-                // Stop if we reach the same color
-                if (tempBoard[tempY][tempX] == color)
-                {
-                    break;
-                }
+	char opponentColor = (color == 'W') ? 'B' : 'W';
 
-                // Flip the opponent color during the way back
-                tempBoard[tempY][tempX] = color;
-                flipCount++;
-            }
+	for (auto& dir : directions)
+	{
+		int dx = dir[1], dy = dir[0];
+		int nx = x + dx, ny = y + dy;
+		bool foundOpponent = false;
 
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
+		while (nx >= 0 && nx < 8 && ny >= 0 && ny < 8)
+		{
+			if (board[ny][nx] == opponentColor)
+			{
+				foundOpponent = true;
+			}
+			else if (board[ny][nx] == color && foundOpponent)
+			{
+				return true;
+			}
+			else
+			{
+				break;
+			}
+			nx += dx;
+			ny += dy;
+		}
+	}
 
-    // Reset the tempX and tempY to the original values
-    tempX = x;
-    tempY = y;
+	return false;
+}
 
-    // Check up-right direction
-    while (true)
-    {
-        tempX++;
-        tempY--;
+void Board::setBoard(char newBoard[8][8])
+{
+	for (int i = 0; i < 8; ++i)
+		for (int j = 0; j < 8; ++j)
+			board[i][j] = newBoard[i][j];
+}
 
-        // Break if out of bounds
-        if (tempX >= 8 || tempY < 0)
-        {
-            break;
-        }
+void Board::setBoard(int row, int col, char value) {
+	if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+		board[row][col] = value;
+	}
+}
 
-        // Check if the current position is occupied by its own color
-        if (tempBoard[tempY][tempX] == color)
-        {
-            // Flip the pieces in between the current position and the last occupied position
-            while (tempX >= 0 && tempY < 8)
-            {
-                tempX--;
-                tempY++;
-
-                // Stop if we reach the same color
-                if (tempBoard[tempY][tempX] == color)
-                {
-                    break;
-                }
-
-                // Flip the opponent color during the way back
-                tempBoard[tempY][tempX] = color;
-                flipCount++;
-            }
-
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
-
-    // Reset the tempX and tempY to the original values
-    tempX = x;
-    tempY = y;
-
-    // Check down-left direction
-    while (true)
-    {
-        tempX--;
-        tempY++;
-
-        // Break if out of bounds
-        if (tempX < 0 || tempY >= 8)
-        {
-            break;
-        }
-
-        // Check if the current position is occupied by its own color
-        if (tempBoard[tempY][tempX] == color)
-        {
-            // Flip the pieces in between the current position and the last occupied position
-            while (tempX < 8 && tempY >= 0)
-            {
-                tempX++;
-                tempY--;
-
-                // Stop if we reach the same color
-                if (tempBoard[tempY][tempX] == color)
-                {
-                    break;
-                }
-
-                // Flip the opponent color during the way back
-                tempBoard[tempY][tempX] = color;
-                flipCount++;
-            }
-
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
-
-    // Reset the tempX and tempY to the original values
-    tempX = x;
-    tempY = y;
-
-    // Check down-right direction
-    while (true)
-    {
-        tempX++;
-        tempY++;
-
-        // Break if out of bounds
-        if (tempX >= 8 || tempY >= 8)
-        {
-            break;
-        }
-
-        // Check if the current position is occupied by its own color
-        if (tempBoard[tempY][tempX] == color)
-        {
-            // Flip the pieces in between the current position and the last occupied position
-            while (tempX >= 0 && tempY >= 0)
-            {
-                tempX--;
-                tempY--;
-
-                // Stop if we reach the same color
-                if (tempBoard[tempY][tempX] == color)
-                {
-                    break;
-                }
-
-                // Flip the opponent color during the way back
-                tempBoard[tempY][tempX] = color;
-                flipCount++;
-            }
-
-            break;
-        }
-        // If the current position is empty, break the loop since no pieces can be flipped
-        else if (tempBoard[tempY][tempX] == BOARD_SPACE)
-        {
-            break;
-        }
-    }
-
-    // Check if any pieces were flipped
-    if (flipCount > 0)
-    {
-        // Only update the board if not in test mode
-        if (!isTest)
-        {
-            for (int row = 0; row < 8; row++)
-            {
-                for (int col = 0; col < 8; col++)
-                {
-                    board[row][col] = tempBoard[row][col];
-                }
-            }
-        }
-
-        return true;
-    }
-    // If no pieces were flipped, flag the move as invalid
-    else
-    {
-        return false;
-    }
+void Board::getBoard(char outputBoard[8][8]) const
+{
+	for (int i = 0; i < 8; ++i)
+		for (int j = 0; j < 8; ++j)
+			outputBoard[i][j] = board[i][j];
 }
