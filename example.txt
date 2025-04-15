@@ -1,9 +1,9 @@
-BBBBBBBB
-BBWBWWBB
-BWBBBBBB
-BBBBBBBW
-BBWBBBWW
-BWWBBWBW
-BWWBWBBW
-BBBBBBBW
+  W     
+BBBB    
+  WBW   
+  BBW   
+   BWB  
+    BW  
+     BW 
+        
 W

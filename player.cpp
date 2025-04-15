@@ -48,8 +48,3 @@ void Player::displayPossibleMoves()
 		std::cout << "\n";
 	}
 }
-
-int Player::randomPossibleMove(){
-    int random=rand()%possibleMovesCount;
-    return random;
-}

@@ -4,7 +4,7 @@
 GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(10.0f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf")) {
-		// Handle font loading error
+		std::cout << "Unable to load font." << std::endl;
 	}
 
 	const float centerX = window.getSize().x / 2.0f;
@@ -130,10 +130,12 @@ void GUI::processEvents() {
 
 void GUI::update() {
 	float remaining = turnTimeLimit - turnClock.getElapsedTime().asSeconds();
+
 	if (remaining <= 0) {
 		game.switchTurn();
 		turnClock.restart();
 	}
+
 	timerText.setString("Timer: " + std::to_string(static_cast<int>(remaining)));
 
 	blackScore = 0;

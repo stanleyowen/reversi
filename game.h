@@ -1,5 +1,3 @@
-
-#include <atomic>
 #ifndef GAME_H
 #define GAME_H
 
@@ -23,7 +21,6 @@ public:
 	std::vector<std::pair<int, int>> getValidMoves(char color) const;
 	void toggleShowHints();
 	void setCurrentPlayerColor(char color);
-    
 
 private:
 	Board board;
@@ -35,10 +32,6 @@ private:
 	void countPieces();
 	void displayWinner();
 	void checkAllPossibleMoves();
-    void timer();
-    std::atomic<bool> moveDone = false;
-    std::atomic<bool> timeUp = false;
-    
 };
 
 #endif // GAME_H
