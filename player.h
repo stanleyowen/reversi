@@ -14,7 +14,7 @@ private:
 	std::string name;
 
 	// clang-format off
-	std::vector<std::vector<int> > possibleMoves;
+	//std::vector<std::vector<int> > possibleMoves;
 	// clang-format on
 
 public:
@@ -30,6 +30,8 @@ public:
 	void clearPossibleMoves();
 	void displayPossibleMoves();
 	int getPossibleMovesCount() const { return possibleMovesCount; };
+    int randomPossibleMove();
+    std::vector<std::vector<int> > possibleMoves;
 };
 
 #endif // Player_H

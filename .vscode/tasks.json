@@ -1,19 +1,74 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "build and run",
-      "type": "shell",
-      "command": "sh",
-      "args": [
-        "-c",
-        "g++ main.cpp game.cpp board.cpp player.cpp -o reversi && ./reversi"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "problemMatcher": ["$gcc"]
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build and run",
+            "type": "shell",
+            "command": "sh",
+            "args": [
+                "-c",
+                "g++ main.cpp game.cpp board.cpp player.cpp -o reversi && ./reversi"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "build and run (win)",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-c",
+                "g++ main.cpp game.cpp board.cpp player.cpp -o reversi && ./reversi"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe 建置使用中檔案",
+            "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "偵錯工具產生的工作。"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: cl.exe 建置使用中檔案",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "偵錯工具產生的工作。"
+        }
+    ]
 }
