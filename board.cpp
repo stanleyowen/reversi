@@ -51,58 +51,257 @@ bool Board::move(int posX, int posY, char currentPlayerColor, bool isTest)
 
 bool Board::flip(int x, int y, char color, bool isTest)
 {
+	// Create a copy of the board to avoid modifying the original during the check
 	int flipCount = 0;
 	char tempBoard[8][8];
 	char opponentColor = (color == 'W') ? 'B' : 'W';
 
-	for (int row = 0; row < 8; ++row)
-		for (int col = 0; col < 8; ++col)
-			tempBoard[row][col] = board[row][col];
-
-	tempBoard[y][x] = color;
-
-	const int directions[8][2] = {
-		{-1, 0}, {1, 0}, {0, -1}, {0, 1},
-		{-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-	};
-
-	for (auto& dir : directions)
+	// Copy the current board state to the temporary board
+	for (int row = 0; row < 8; row++)
 	{
-		int dx = dir[1], dy = dir[0];
-		int nx = x + dx, ny = y + dy;
-		int pathCount = 0;
-
-		while (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && tempBoard[ny][nx] == opponentColor)
+		for (int col = 0; col < 8; col++)
 		{
-			nx += dx;
-			ny += dy;
-			pathCount++;
-		}
-
-		if (pathCount > 0 && nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && tempBoard[ny][nx] == color)
-		{
-			// Flip pieces
-			for (int i = 1; i <= pathCount; ++i)
-			{
-				int fx = x + dx * i;
-				int fy = y + dy * i;
-				tempBoard[fy][fx] = color;
-				flipCount++;
-			}
+			tempBoard[row][col] = board[row][col];
 		}
 	}
 
+	tempBoard[y][x] = color;
+
+	// Check up direction
+	for (int i = y - 1; i >= 0; i--)
+	{
+		if (tempBoard[i][x] == color)
+		{
+			for (int j = y - 1; j > i; j--)
+			{
+				tempBoard[j][x] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[i][x] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	// Check down direction
+	for (int i = y + 1; i < 8; i++)
+	{
+		if (tempBoard[i][x] == color)
+		{
+			for (int j = y + 1; j < i; j++)
+			{
+				tempBoard[j][x] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[i][x] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	// Check left direction
+	for (int i = x - 1; i >= 0; i--)
+	{
+		if (tempBoard[y][i] == color)
+		{
+			for (int j = x - 1; j > i; j--)
+			{
+				tempBoard[y][j] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[y][i] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	// Check right direction
+	for (int i = x + 1; i < 8; i++)
+	{
+		if (tempBoard[y][i] == color)
+		{
+			for (int j = x + 1; j < i; j++)
+			{
+				tempBoard[y][j] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[y][i] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	int tempX = x;
+	int tempY = y;
+
+	// Diagonal check (up-left)
+	while (true)
+	{
+		tempX--;
+		tempY--;
+
+		if (tempX < 0 || tempY < 0)
+		{
+			break;
+		}
+
+		if (tempBoard[tempY][tempX] == color)
+		{
+			while (tempX < 8 && tempY < 8)
+			{
+				tempX++;
+				tempY++;
+
+				if (tempBoard[tempY][tempX] == color)
+				{
+					break;
+				}
+
+				tempBoard[tempY][tempX] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[tempY][tempX] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	tempX = x;
+	tempY = y;
+
+	// Check up-right direction
+	while (true)
+	{
+		tempX++;
+		tempY--;
+
+		if (tempX >= 8 || tempY < 0)
+		{
+			break;
+		}
+
+		if (tempBoard[tempY][tempX] == color)
+		{
+			while (tempX >= 0 && tempY < 8)
+			{
+				tempX--;
+				tempY++;
+
+				if (tempBoard[tempY][tempX] == color)
+				{
+					break;
+				}
+
+				tempBoard[tempY][tempX] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[tempY][tempX] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	tempX = x;
+	tempY = y;
+
+	// Check down-left direction
+	while (true)
+	{
+		tempX--;
+		tempY++;
+
+		if (tempX < 0 || tempY >= 8)
+		{
+			break;
+		}
+
+		if (tempBoard[tempY][tempX] == color)
+		{
+			while (tempX < 8 && tempY >= 0)
+			{
+				tempX++;
+				tempY--;
+
+				if (tempBoard[tempY][tempX] == color)
+				{
+					break;
+				}
+
+				tempBoard[tempY][tempX] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[tempY][tempX] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	tempX = x;
+	tempY = y;
+
+	// Check down-right direction
+	while (true)
+	{
+		tempX++;
+		tempY++;
+
+		if (tempX >= 8 || tempY >= 8)
+		{
+			break;
+		}
+
+		if (tempBoard[tempY][tempX] == color)
+		{
+			while (tempX >= 0 && tempY >= 0)
+			{
+				tempX--;
+				tempY--;
+
+				if (tempBoard[tempY][tempX] == color)
+				{
+					break;
+				}
+
+				tempBoard[tempY][tempX] = color;
+				flipCount++;
+			}
+			break;
+		}
+		else if (tempBoard[tempY][tempX] == BOARD_SPACE)
+		{
+			break;
+		}
+	}
+
+	// Check if any pieces were flipped
 	if (flipCount > 0)
 	{
 		if (!isTest)
 		{
-			for (int row = 0; row < 8; ++row)
-				for (int col = 0; col < 8; ++col)
+			for (int row = 0; row < 8; row++)
+			{
+				for (int col = 0; col < 8; col++)
+				{
 					board[row][col] = tempBoard[row][col];
+				}
+			}
 		}
 		return true;
 	}
-
 	return false;
 }
 
