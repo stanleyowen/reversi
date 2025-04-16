@@ -71,7 +71,7 @@ void GUI::animatePiecePlacement(int x, int y, sf::Color color)
 }
 
 // Constructor initializes window, fonts, buttons, and board layout
-GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(20.0f), showHints(true)
+GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(5.0f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf"))
 	{
@@ -219,7 +219,6 @@ void GUI::processEvents()
 
 					if (possibleMovesCount == 0)
 					{
-						std::cout << "No valid moves available for the current player." << showHints << std::endl;
 						game.switchTurn(); // Switch turn if no moves available
 						turnClock.restart();
 					}
@@ -282,12 +281,10 @@ void GUI::update()
 				saveToFile();
 				game.switchTurn();
 			}
-			std::cout << "Random move made by " << game.getCurrentPlayerColor() << ": (" << x << ", " << y << ")" << std::endl;
 		}
 		else
 		{
 			game.switchTurn();
-			std::cout << "No valid moves available for the current player." << std::endl;
 		}
 
 		turnClock.restart();
@@ -362,12 +359,19 @@ void GUI::render()
 	// Check if the game is over
 	if (game.isGameOver())
 	{
-		if (askPlayAgain())
-		{
+		std::cout << "Game over has been called." << std::endl;
+
+		// Show winner in a small popup
+		displayWinner();
+
+		// Ask if the player wants to play again after the winner popup is closed
+		bool playAgain = askPlayAgain();
+
+		// If yes, reset the game; else, close the window
+		if (playAgain) {
 			resetGame();
 		}
-		else
-		{
+		else {
 			window.close();
 		}
 
@@ -432,9 +436,8 @@ void GUI::checkHints()
 
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
-	std::cout << "Hints updated for player: " << game.getCurrentPlayerColor() << std::endl;
 
-	for (const auto &move : possibleMoves)
+	for (const auto& move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
@@ -591,20 +594,15 @@ void GUI::displayWinner()
 		for (int j = 0; j < 8; ++j)
 		{
 			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B')
-				blackScore++;
-			else if (piece == 'W')
-				whiteScore++;
+			if (piece == 'B') blackScore++;
+			else if (piece == 'W') whiteScore++;
 		}
 	}
 
 	std::string winner;
-	if (blackScore > whiteScore)
-		winner = "Black wins!";
-	else if (whiteScore > blackScore)
-		winner = "White wins!";
-	else
-		winner = "It's a tie!";
+	if (blackScore > whiteScore) winner = "Black wins!";
+	else if (whiteScore > blackScore) winner = "White wins!";
+	else winner = "It's a tie!";
 
 	// Create popup window
 	sf::RenderWindow popup(sf::VideoMode(400, 250), "Game Over");

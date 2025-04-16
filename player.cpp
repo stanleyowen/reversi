@@ -40,10 +40,9 @@ void Player::displayPossibleMoves()
 	}
 	else
 	{
-		std::cout << "Possible moves available: ";
 		for (int i = 0; i < possibleMovesCount; i++)
 		{
-			std::cout << "(" << possibleMoves[i][0] << ", " << possibleMoves[i][1] << ") ";
+
 		}
 		std::cout << "\n";
 	}
