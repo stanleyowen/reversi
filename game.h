@@ -21,6 +21,9 @@ public:
 	std::vector<std::pair<int, int>> getValidMoves(char color) const;
 	void toggleShowHints();
 	void setCurrentPlayerColor(char color);
+	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
+	int getCurrentPlayerPossibleMovesCount() const;
+	bool isGameOver();
 
 private:
 	Board board;
@@ -28,7 +31,6 @@ private:
 	Player playerB;
 	Player* currentPlayer;
 
-	bool isGameOver();
 	void countPieces();
 	void displayWinner();
 	void checkAllPossibleMoves();

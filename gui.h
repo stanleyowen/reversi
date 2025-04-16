@@ -19,6 +19,9 @@ private:
 	void saveToFile();
 	void loadFromFile();
 	void updateHintButtonLabel();
+	void checkHints();
+	void clearHints();
+	void displayWinner();
 
 	sf::RenderWindow window;
 	Game game;

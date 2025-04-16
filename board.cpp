@@ -25,7 +25,7 @@ void Board::display() const
 		std::cout << i << " ";
 		for (int j = 0; j < 8; ++j)
 		{
-			if (showHints && board[i][j] == BOARD_SPACE)
+			if (board[i][j] == BOARD_SPACE)
 			{
 				if (isValidMove(j, i, 'B') || isValidMove(j, i, 'W'))
 					std::cout << ". ";
@@ -334,13 +334,11 @@ bool Board::isValidMove(int x, int y, char color) const
 		return false;
 
 	const int directions[8][2] = {
-		{-1, 0}, {1, 0}, {0, -1}, {0, 1},
-		{-1, -1}, {-1, 1}, {1, -1}, {1, 1}
-	};
+		{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
 	char opponentColor = (color == 'W') ? 'B' : 'W';
 
-	for (auto& dir : directions)
+	for (auto &dir : directions)
 	{
 		int dx = dir[1], dy = dir[0];
 		int nx = x + dx, ny = y + dy;
@@ -375,8 +373,10 @@ void Board::setBoard(char newBoard[8][8])
 			board[i][j] = newBoard[i][j];
 }
 
-void Board::setBoard(int row, int col, char value) {
-	if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+void Board::setBoard(int row, int col, char value)
+{
+	if (row >= 0 && row < 8 && col >= 0 && col < 8)
+	{
 		board[row][col] = value;
 	}
 }
