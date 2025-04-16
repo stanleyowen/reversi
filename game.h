@@ -21,7 +21,7 @@ public:
 	std::vector<std::pair<int, int>> getValidMoves(char color) const;
 	void toggleShowHints();
 	void setCurrentPlayerColor(char color);
-	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves() const;
+	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
 
 private:
 	Board board;

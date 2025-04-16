@@ -79,6 +79,26 @@ GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteS
 	}
 }
 
+void GUI::checkHints()
+{
+	std::cout << "Cheking hints..." << std::endl;
+	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
+
+	for (const auto &move : possibleMoves)
+	{
+		int x = move[0];
+		int y = move[1];
+		if (game.getCurrentPlayerColor() == 'B')
+		{
+			pieces[x][y].setFillColor(sf::Color(0, 0, 0, 100)); // translucent black
+		}
+		else
+		{
+			pieces[x][y].setFillColor(sf::Color(255, 255, 255, 100)); // translucent white
+		}
+	}
+}
+
 void GUI::run()
 {
 	while (window.isOpen())
@@ -113,6 +133,7 @@ void GUI::processEvents()
 			{
 				showHints = !showHints;
 				updateHintButtonLabel(); // Update the label when toggling
+				checkHints();
 			}
 			else
 			{
@@ -128,6 +149,17 @@ void GUI::processEvents()
 						game.switchTurn();
 						saveToFile();
 						turnClock.restart();
+
+						// Reset all ghost pieces
+						for (int i = 0; i < 8; ++i)
+							for (int j = 0; j < 8; ++j)
+								pieces[i][j].setFillColor(sf::Color::Transparent);
+
+						// Ghost pieces
+						if (showHints)
+						{
+							checkHints();
+						}
 					}
 				}
 			}
@@ -178,31 +210,6 @@ void GUI::update()
 
 	blackScore = 0;
 	whiteScore = 0;
-
-	// Reset all ghost pieces
-	for (int i = 0; i < 8; ++i)
-		for (int j = 0; j < 8; ++j)
-			pieces[i][j].setFillColor(sf::Color::Transparent);
-
-	// Ghost pieces
-	if (showHints)
-	{
-		std::vector<std::pair<int, int>> validMoves = game.getValidMoves(game.getCurrentPlayerColor());
-
-		for (const auto& move : validMoves)
-		{
-			int x = move.first;
-			int y = move.second;
-			if (game.getCurrentPlayerColor() == 'B')
-			{
-				pieces[x][y].setFillColor(sf::Color(0, 0, 0, 100)); // translucent black
-			}
-			else
-			{
-				pieces[x][y].setFillColor(sf::Color(255, 255, 255, 100)); // translucent white
-			}
-		}
-	}
 
 	// Update pieces and scores
 	for (int i = 0; i < 8; ++i)
