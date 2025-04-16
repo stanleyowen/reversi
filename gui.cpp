@@ -81,7 +81,10 @@ GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteS
 
 void GUI::checkHints()
 {
-	std::cout << "Cheking hints..." << std::endl;
+	for (int i = 0; i < 8; ++i)
+		for (int j = 0; j < 8; ++j)
+			pieces[i][j].setFillColor(sf::Color::Transparent);
+
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
 	for (const auto &move : possibleMoves)
@@ -151,9 +154,6 @@ void GUI::processEvents()
 						turnClock.restart();
 
 						// Reset all ghost pieces
-						for (int i = 0; i < 8; ++i)
-							for (int j = 0; j < 8; ++j)
-								pieces[i][j].setFillColor(sf::Color::Transparent);
 
 						// Ghost pieces
 						if (showHints)
@@ -204,6 +204,7 @@ void GUI::update()
 		//}
 
 		game.switchTurn();
+		checkHints();
 		turnClock.restart();
 	}
 	timerText.setString("Timer: " + std::to_string(static_cast<int>(remaining)));
