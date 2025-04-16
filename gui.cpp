@@ -1,4 +1,5 @@
 ﻿#include "gui.h"
+#include "game.h"
 #include <fstream>
 
 // Constructor initializes window, fonts, buttons, and board layout
@@ -275,24 +276,28 @@ void GUI::render()
 	window.draw(hintToggleButtonText);
 	window.display();
 
-	// Check if the game is over
 	if (game.isGameOver())
 	{
-		std::cout << "game over is called" << std::endl;
-		if (askPlayAgain())
+		std::cout << "Game over has been called." << std::endl;
+
+		// Show winner in a small popup
+		displayWinner();
+
+		// Ask if the player wants to play again after the winner popup is closed
+		bool playAgain = askPlayAgain();
+
+		// If yes, reset the game; else, close the window
+		if (playAgain)
 		{
 			resetGame();
 		}
 		else
 		{
-			displayWinner();
+			window.close();
 		}
+
 		return;
 	}
-}
-
-void GUI::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
-{
 }
 
 // Save the current board state and player turn to a file
@@ -353,7 +358,7 @@ void GUI::checkHints()
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
-	for (const auto &move : possibleMoves)
+	for (const auto& move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
@@ -396,99 +401,6 @@ void GUI::updateHintButtonLabel()
 	float textX = hintToggleButton.getPosition().x + (hintToggleButton.getSize().x - hintToggleButtonText.getLocalBounds().width) / 2;
 	float textY = hintToggleButton.getPosition().y + (hintToggleButton.getSize().y - hintToggleButtonText.getLocalBounds().height) / 2 - 5;
 	hintToggleButtonText.setPosition(textX, textY);
-}
-
-void GUI::displayWinner()
-{
-	// Count pieces on the board for both players
-	blackScore = 0;
-	whiteScore = 0;
-
-	for (int i = 0; i < 8; ++i)
-	{
-		for (int j = 0; j < 8; ++j)
-		{
-			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B')
-			{
-				blackScore++;
-			}
-			else if (piece == 'W')
-			{
-				whiteScore++;
-			}
-		}
-	}
-
-	// Determine the game result text
-	std::string winnerText;
-	if (blackScore > whiteScore)
-	{
-		winnerText = "Black wins!";
-	}
-	else if (whiteScore > blackScore)
-	{
-		winnerText = "White wins!";
-	}
-	else
-	{
-		winnerText = "It's a tie!";
-	}
-
-	// Prepare text and background for the game over screen
-	sf::Text gameOverText;
-	gameOverText.setFont(font);
-	gameOverText.setCharacterSize(48);
-	gameOverText.setFillColor(sf::Color::White);
-	gameOverText.setString("Game Over");
-
-	// Create a background rectangle for the heading
-	sf::RectangleShape headingBox(sf::Vector2f(gameOverText.getLocalBounds().width + 20, gameOverText.getLocalBounds().height + 30));
-	headingBox.setFillColor(sf::Color(50, 50, 50, 200));						   // Semi-transparent dark background
-	headingBox.setPosition((window.getSize().x - headingBox.getSize().x) / 2, 50); // Centered at top
-
-	// Center the game over text inside the heading box
-	gameOverText.setPosition((window.getSize().x - gameOverText.getLocalBounds().width) / 2, 50 + (headingBox.getSize().y - gameOverText.getLocalBounds().height) / 2);
-
-	// Display the scores below the "Game Over"
-	sf::Text scoreText;
-	scoreText.setFont(font);
-	scoreText.setCharacterSize(36);
-	scoreText.setFillColor(sf::Color::White);
-	scoreText.setString("Black: " + std::to_string(blackScore) + "\nWhite: " + std::to_string(whiteScore));
-
-	// Position the score text centered below the heading box
-	scoreText.setPosition((window.getSize().x - scoreText.getLocalBounds().width) / 2, 150);
-
-	// Display the winner text below the scores
-	sf::Text winnerTextDisplay;
-	winnerTextDisplay.setFont(font);
-	winnerTextDisplay.setCharacterSize(36);
-	winnerTextDisplay.setFillColor(sf::Color::White);
-	winnerTextDisplay.setString(winnerText);
-
-	// Position the winner text below the score text
-	winnerTextDisplay.setPosition((window.getSize().x - winnerTextDisplay.getLocalBounds().width) / 2, 250);
-
-	// Show the result until window is closed or key is pressed
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed || event.type == sf::Event::KeyPressed)
-			{
-				window.close();
-			}
-		}
-
-		window.clear(sf::Color(30, 30, 30)); // Dark background color
-		window.draw(headingBox);			 // Draw the heading box
-		window.draw(gameOverText);			 // Draw the Game Over text
-		window.draw(scoreText);				 // Draw the score text
-		window.draw(winnerTextDisplay);		 // Draw the winner text
-		window.display();
-	}
 }
 
 bool GUI::askPlayAgain()
@@ -549,7 +461,7 @@ bool GUI::askPlayAgain()
 			}
 		}
 
-		popup.clear(sf::Color::Black);
+		popup.clear(sf::Color(30, 30, 30));
 		popup.draw(question);
 		popup.draw(yesButton);
 		popup.draw(yesText);
@@ -590,5 +502,60 @@ void GUI::resetGame()
 	if (showHints)
 	{
 		checkHints();
+	}
+}
+
+void GUI::displayWinner()
+{
+	// Count pieces
+	blackScore = 0;
+	whiteScore = 0;
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			char piece = game.getBoard().getBoard(i, j);
+			if (piece == 'B') blackScore++;
+			else if (piece == 'W') whiteScore++;
+		}
+	}
+
+	std::string winner;
+	if (blackScore > whiteScore) winner = "Black wins!";
+	else if (whiteScore > blackScore) winner = "White wins!";
+	else winner = "It's a tie!";
+
+	// Create popup window
+	sf::RenderWindow popup(sf::VideoMode(400, 250), "Game Over");
+
+	sf::Font font;
+	if (!font.loadFromFile("arial.ttf"))
+		return;
+
+	// Create result text with scores
+	std::string resultMessage = winner + "\n\nBlack: " + std::to_string(blackScore) + "\nWhite: " + std::to_string(whiteScore);
+	sf::Text resultText(resultMessage, font, 24);
+	resultText.setFillColor(sf::Color::White);
+
+	// Center the result text
+	sf::FloatRect textBounds = resultText.getLocalBounds();
+	resultText.setOrigin(textBounds.left + textBounds.width / 2, textBounds.top + textBounds.height / 2);
+	resultText.setPosition(popup.getSize().x / 2, popup.getSize().y / 2);
+
+	// Show popup until user presses a key or closes
+	while (popup.isOpen())
+	{
+		sf::Event event;
+		while (popup.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || event.type == sf::Event::KeyPressed || event.type == sf::Event::MouseButtonPressed)
+			{
+				popup.close(); // Any interaction closes the popup
+			}
+		}
+
+		popup.clear(sf::Color(30, 30, 30)); // Dark background
+		popup.draw(resultText);
+		popup.display();
 	}
 }
