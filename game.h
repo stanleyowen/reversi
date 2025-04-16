@@ -22,6 +22,7 @@ public:
 	void toggleShowHints();
 	void setCurrentPlayerColor(char color);
 	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
+	int getCurrentPlayerPossibleMovesCount() const;
 
 private:
 	Board board;

@@ -106,7 +106,6 @@ void GUI::checkHints()
 		int x = move[0],
 			y = move[1];
 
-		std::cout << x << " " << y << "\n";
 		if (x >= 0 && x < 8 && y >= 0 && y < 8)
 		{
 			if (game.getCurrentPlayerColor() == 'B')
@@ -207,30 +206,38 @@ void GUI::update()
 	float remaining = turnTimeLimit - turnClock.getElapsedTime().asSeconds();
 	if (remaining <= 0)
 	{
-		// game.checkAllPossibleMoves();
-		//// Random move made by the AI
-		// std::vector<std::pair<int, int>> validMoves = game.getCurrentPlayerColor();
+		// Randomly move a piece for the current player
+		std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
+		int possibleMovesCount = game.getCurrentPlayerPossibleMovesCount();
 
-		// if (!validMoves.empty())
-		//{
-		//	// Seed random number generator
-		//	srand(static_cast<unsigned>(std::time(0)));
+		if (!possibleMoves.empty())
+		{
+			int randomIndex = rand() % possibleMovesCount;
+			int x = possibleMoves[randomIndex][0];
+			int y = possibleMoves[randomIndex][1];
 
-		//	// Choose a random move
-		//	int randomIndex = rand() % validMoves.size();
-		//	int randomX = validMoves[randomIndex].first;
-		//	int randomY = validMoves[randomIndex].second;
+			if (game.move(x, y, game.getCurrentPlayerColor()))
+			{
+				game.switchTurn();
+				saveToFile();
+				turnClock.restart();
 
-		//	// Make the random move
-		//	game.move(randomX, randomY, game.getCurrentPlayerColor());
-		//}
-		// else
-		//{
-		//	std::cout << "No valid moves available for AI." << std::endl;
-		//}
+				// Reset all ghost pieces
+				// Ghost pieces
+				if (showHints)
+				{
+					checkHints();
+				}
+			}
 
-		game.switchTurn();
-		checkHints();
+			std::cout << "Random move made by " << game.getCurrentPlayerColor() << ": (" << x << ", " << y << ")" << std::endl;
+			saveToFile();
+		}
+		else
+		{
+			std::cout << "No valid moves available for the current player." << std::endl;
+		}
+
 		turnClock.restart();
 	}
 	timerText.setString("Timer: " + std::to_string(static_cast<int>(remaining)));
