@@ -2,6 +2,74 @@
 #include "game.h"
 #include <fstream>
 
+void GUI::animatePiecePlacement(int x, int y, sf::Color color)
+{
+	sf::CircleShape animatedPiece(35); // Start with the same size as the pieces
+	animatedPiece.setFillColor(color);
+
+	// Set the position of the animated piece to the center of the square
+	sf::Vector2f piecePosition = pieces[x][y].getPosition();
+	animatedPiece.setPosition(piecePosition);
+
+	// Set the origin of the animated piece to its center
+	animatedPiece.setOrigin(animatedPiece.getRadius(), animatedPiece.getRadius());
+
+	// Adjust the position to account for the origin shift
+	animatedPiece.setPosition(piecePosition.x + animatedPiece.getRadius(), piecePosition.y + animatedPiece.getRadius());
+
+	float scale = 0.1f;				   // Start with a small scale
+	const float maxScale = 1.0f;	   // Target scale
+	const float animationSpeed = 0.3f; // Speed of the animation (adjusted for 0.5s duration)
+	const int frameDelay = 5;		   // Delay in milliseconds for smoother animation
+
+	// Calculate the number of frames for the animation
+	int totalFrames = static_cast<int>((maxScale - scale) / animationSpeed);
+
+	for (int frame = 0; frame < totalFrames; ++frame)
+	{
+		sf::sleep(sf::milliseconds(frameDelay)); // Add a small delay for smoother animation
+
+		scale += animationSpeed; // Gradually increase the scale
+		animatedPiece.setScale(scale, scale);
+
+		// Clear and redraw the window
+		window.clear(sf::Color(30, 30, 30));
+		window.draw(titleText);
+		window.draw(turnText);
+		window.draw(timerText);
+
+		// Redraw the board and pieces
+		for (int i = 0; i < 8; ++i)
+		{
+			for (int j = 0; j < 8; ++j)
+			{
+				window.draw(boardSquares[i][j]);
+				if (i == x && j == y)
+				{
+					// Draw the animated piece instead of the static one
+					window.draw(animatedPiece);
+				}
+				else
+				{
+					window.draw(pieces[i][j]);
+				}
+			}
+		}
+
+		// Draw UI elements
+		window.draw(scoreText);
+		window.draw(loadButton);
+		window.draw(loadButtonText);
+		window.draw(hintToggleButton);
+		window.draw(hintToggleButtonText);
+
+		window.display();
+	}
+
+	// Set the final piece color after the animation
+	pieces[x][y].setFillColor(color);
+}
+
 // Constructor initializes window, fonts, buttons, and board layout
 GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(20.0f), showHints(true)
 {
@@ -160,6 +228,11 @@ void GUI::processEvents()
 						// If move is valid, make move and switch turn
 						if (game.move(x, y, game.getCurrentPlayerColor()))
 						{
+							sf::Color pieceColor = (game.getCurrentPlayerColor() == 'B') ? sf::Color::Black : sf::Color::White;
+
+							// Animate the piece placement
+							animatePiecePlacement(x, y, pieceColor);
+
 							saveToFile(); // Save the game state
 
 							// Switch turn to the next player if the game is not over
@@ -201,6 +274,11 @@ void GUI::update()
 
 			if (game.move(x, y, game.getCurrentPlayerColor()))
 			{
+				sf::Color pieceColor = (game.getCurrentPlayerColor() == 'B') ? sf::Color::Black : sf::Color::White;
+
+				// Animate the piece placement
+				animatePiecePlacement(x, y, pieceColor);
+
 				saveToFile();
 				game.switchTurn();
 			}

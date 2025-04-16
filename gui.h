@@ -31,6 +31,8 @@ private:
 	void displayWinner();
 	void resetGame();
 
+	void animatePiecePlacement(int x, int y, sf::Color color);
+
 	Game game;
 	sf::RenderWindow window;
 	sf::Font font;
