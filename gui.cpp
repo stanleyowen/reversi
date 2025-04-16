@@ -97,21 +97,6 @@ void GUI::run()
 		processEvents();
 		update();
 		render();
-
-		// Check if the game is over
-		if (game.isGameOver())
-		{
-			std::cout << "game over is called" << std::endl;
-			if (askPlayAgain())
-			{
-				resetGame();
-			}
-			else
-			{
-				displayWinner();
-			}
-			return;
-		}
 	}
 }
 
@@ -289,6 +274,21 @@ void GUI::render()
 	window.draw(hintToggleButton);
 	window.draw(hintToggleButtonText);
 	window.display();
+
+	// Check if the game is over
+	if (game.isGameOver())
+	{
+		std::cout << "game over is called" << std::endl;
+		if (askPlayAgain())
+		{
+			resetGame();
+		}
+		else
+		{
+			displayWinner();
+		}
+		return;
+	}
 }
 
 void GUI::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
@@ -353,7 +353,7 @@ void GUI::checkHints()
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
-	for (const auto& move : possibleMoves)
+	for (const auto &move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
