@@ -77,27 +77,46 @@ GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteS
 			pieces[i][j].setFillColor(sf::Color::Transparent);
 		}
 	}
+
+	if (showHints)
+	{
+		checkHints();
+	}
+}
+
+void GUI::clearHints()
+{
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			pieces[i][j].setFillColor(sf::Color::Transparent);
+		}
+	}
 }
 
 void GUI::checkHints()
 {
-	for (int i = 0; i < 8; ++i)
-		for (int j = 0; j < 8; ++j)
-			pieces[i][j].setFillColor(sf::Color::Transparent);
+	clearHints();
 
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
 	for (const auto &move : possibleMoves)
 	{
-		int x = move[0];
-		int y = move[1];
-		if (game.getCurrentPlayerColor() == 'B')
+		int x = move[0],
+			y = move[1];
+
+		std::cout << x << " " << y << "\n";
+		if (x >= 0 && x < 8 && y >= 0 && y < 8)
 		{
-			pieces[x][y].setFillColor(sf::Color(0, 0, 0, 100)); // translucent black
-		}
-		else
-		{
-			pieces[x][y].setFillColor(sf::Color(255, 255, 255, 100)); // translucent white
+			if (game.getCurrentPlayerColor() == 'B')
+			{
+				pieces[x][y].setFillColor(sf::Color(0, 0, 0, 100)); // translucent black
+			}
+			else
+			{
+				pieces[x][y].setFillColor(sf::Color(255, 255, 255, 100)); // translucent white
+			}
 		}
 	}
 }
@@ -136,7 +155,15 @@ void GUI::processEvents()
 			{
 				showHints = !showHints;
 				updateHintButtonLabel(); // Update the label when toggling
-				checkHints();
+
+				if (showHints)
+				{
+					checkHints();
+				}
+				else
+				{
+					clearHints();
+				}
 			}
 			else
 			{
@@ -154,7 +181,6 @@ void GUI::processEvents()
 						turnClock.restart();
 
 						// Reset all ghost pieces
-
 						// Ghost pieces
 						if (showHints)
 						{

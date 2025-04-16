@@ -20,6 +20,7 @@ private:
 	void loadFromFile();
 	void updateHintButtonLabel();
 	void checkHints();
+	void clearHints();
 
 	sf::RenderWindow window;
 	Game game;
