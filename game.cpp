@@ -342,7 +342,6 @@ void Game::setCurrentPlayerColor(char color)
 
 std::vector<std::vector<int>> Game::getCurrentPlayerPossibleMoves()
 {
-	std::cout << "Current Player Possible Moves: ";
 	checkAllPossibleMoves();
 	currentPlayer->displayPossibleMoves();
 	std::cout << currentPlayer->getPossibleMovesCount() << std::endl;

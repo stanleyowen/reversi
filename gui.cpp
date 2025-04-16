@@ -210,7 +210,7 @@ void GUI::update()
 		std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 		int possibleMovesCount = game.getCurrentPlayerPossibleMovesCount();
 
-		if (!possibleMoves.empty())
+		if (possibleMovesCount != 0)
 		{
 			int randomIndex = rand() % possibleMovesCount;
 			int x = possibleMoves[randomIndex][0];
@@ -218,9 +218,7 @@ void GUI::update()
 
 			if (game.move(x, y, game.getCurrentPlayerColor()))
 			{
-				game.switchTurn();
 				saveToFile();
-				turnClock.restart();
 
 				// Reset all ghost pieces
 				// Ghost pieces
@@ -238,8 +236,17 @@ void GUI::update()
 			std::cout << "No valid moves available for the current player." << std::endl;
 		}
 
+		game.switchTurn();
 		turnClock.restart();
 	}
+
+	// Check if the game is over
+	if (game.isGameOver())
+	{
+		displayWinner();
+		return;
+	}
+
 	timerText.setString("Timer: " + std::to_string(static_cast<int>(remaining)));
 
 	blackScore = 0;
@@ -295,6 +302,61 @@ void GUI::render()
 	window.draw(hintToggleButton);
 	window.draw(hintToggleButtonText);
 	window.display();
+}
+
+void GUI::displayWinner()
+{
+	// Count pieces for both players
+	blackScore = 0;
+	whiteScore = 0;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			char piece = game.getBoard().getBoard(i, j);
+			if (piece == 'B')
+			{
+				blackScore++;
+			}
+			else if (piece == 'W')
+			{
+				whiteScore++;
+			}
+		}
+	}
+
+	// Determine the winner
+	std::string winnerText;
+	if (blackScore > whiteScore)
+	{
+		winnerText = "Black wins!";
+	}
+	else if (whiteScore > blackScore)
+	{
+		winnerText = "White wins!";
+	}
+	else
+	{
+		winnerText = "It's a tie!";
+	}
+
+	// Display the winner
+	sf::Text winnerDisplay;
+	winnerDisplay.setFont(font);
+	winnerDisplay.setCharacterSize(36);
+	winnerDisplay.setFillColor(sf::Color::Yellow);
+	winnerDisplay.setString(winnerText + "\nBlack: " + std::to_string(blackScore) + "  White: " + std::to_string(whiteScore));
+	winnerDisplay.setPosition(window.getSize().x / 2.0f - winnerDisplay.getLocalBounds().width / 2, window.getSize().y / 2.0f - 50);
+
+	// Render the winner display
+	window.clear(sf::Color(30, 30, 30));
+	window.draw(winnerDisplay);
+	window.display();
+
+	// Pause to allow the user to see the result
+	sf::sleep(sf::seconds(5));
+	window.close();
 }
 
 void GUI::saveToFile()

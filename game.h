@@ -13,7 +13,7 @@ public:
 	~Game();
 
 	void start();
-	Board &getBoard();
+	Board& getBoard();
 	bool move(int x, int y, char color);
 	bool isValidMove(int row, int col, char color) const;
 	char getCurrentPlayerColor() const;
@@ -23,14 +23,14 @@ public:
 	void setCurrentPlayerColor(char color);
 	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
 	int getCurrentPlayerPossibleMovesCount() const;
+	bool isGameOver();
 
 private:
 	Board board;
 	Player playerA;
 	Player playerB;
-	Player *currentPlayer;
+	Player* currentPlayer;
 
-	bool isGameOver();
 	void countPieces();
 	void displayWinner();
 	void checkAllPossibleMoves();

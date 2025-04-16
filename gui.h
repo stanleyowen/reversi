@@ -21,6 +21,7 @@ private:
 	void updateHintButtonLabel();
 	void checkHints();
 	void clearHints();
+	void displayWinner();
 
 	sf::RenderWindow window;
 	Game game;
