@@ -3,7 +3,8 @@
 
 GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(10.0f), showHints(true)
 {
-	if (!font.loadFromFile("Arial.ttf")) {
+	if (!font.loadFromFile("Arial.ttf"))
+	{
 		// Handle font loading error
 	}
 
@@ -61,8 +62,10 @@ GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteS
 	const float boardStartX = (window.getSize().x - 8 * 80) / 2.0f;
 	const float boardStartY = 150;
 
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			boardSquares[i][j].setSize(sf::Vector2f(78, 78));
 			boardSquares[i][j].setPosition(boardStartX + i * 80, boardStartY + j * 80);
 			boardSquares[i][j].setFillColor(boardColor);
@@ -76,41 +79,52 @@ GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteS
 	}
 }
 
-void GUI::run() {
-	while (window.isOpen()) {
+void GUI::run()
+{
+	while (window.isOpen())
+	{
 		processEvents();
 		update();
 		render();
 	}
 }
 
-void GUI::processEvents() {
+void GUI::processEvents()
+{
 	sf::Event event;
-	while (window.pollEvent(event)) {
-		if (event.type == sf::Event::Closed) {
+	while (window.pollEvent(event))
+	{
+		if (event.type == sf::Event::Closed)
+		{
 			window.close();
 		}
-		else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+		else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+		{
 			sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
 
 			// Check if load button was clicked
-			if (loadButton.getGlobalBounds().contains(mousePos)) {
+			if (loadButton.getGlobalBounds().contains(mousePos))
+			{
 				loadFromFile();
 				turnClock.restart();
 			}
 			// Check if hint toggle button was clicked
-			else if (hintToggleButton.getGlobalBounds().contains(mousePos)) {
+			else if (hintToggleButton.getGlobalBounds().contains(mousePos))
+			{
 				showHints = !showHints;
 				updateHintButtonLabel(); // Update the label when toggling
 			}
-			else {
+			else
+			{
 				const float boardStartX = (window.getSize().x - 8 * 80) / 2.0f;
 				const float boardStartY = 150;
 				int x = (event.mouseButton.x - boardStartX) / 80;
 				int y = (event.mouseButton.y - boardStartY) / 80;
 
-				if (x >= 0 && x < 8 && y >= 0 && y < 8) {
-					if (game.move(x, y, game.getCurrentPlayerColor())) {
+				if (x >= 0 && x < 8 && y >= 0 && y < 8)
+				{
+					if (game.move(x, y, game.getCurrentPlayerColor()))
+					{
 						game.switchTurn();
 						saveToFile();
 						turnClock.restart();
@@ -118,9 +132,11 @@ void GUI::processEvents() {
 				}
 			}
 		}
-		else if (event.type == sf::Event::KeyPressed) {
+		else if (event.type == sf::Event::KeyPressed)
+		{
 			// Pressing 'H' will toggle the hints
-			if (event.key.code == sf::Keyboard::H) {
+			if (event.key.code == sf::Keyboard::H)
+			{
 				showHints = !showHints;
 				updateHintButtonLabel(); // Update the label when toggling
 			}
@@ -128,9 +144,33 @@ void GUI::processEvents() {
 	}
 }
 
-void GUI::update() {
+void GUI::update()
+{
 	float remaining = turnTimeLimit - turnClock.getElapsedTime().asSeconds();
-	if (remaining <= 0) {
+	if (remaining <= 0)
+	{
+		// game.checkAllPossibleMoves();
+		//// Random move made by the AI
+		// std::vector<std::pair<int, int>> validMoves = game.getCurrentPlayerColor();
+
+		// if (!validMoves.empty())
+		//{
+		//	// Seed random number generator
+		//	srand(static_cast<unsigned>(std::time(0)));
+
+		//	// Choose a random move
+		//	int randomIndex = rand() % validMoves.size();
+		//	int randomX = validMoves[randomIndex].first;
+		//	int randomY = validMoves[randomIndex].second;
+
+		//	// Make the random move
+		//	game.move(randomX, randomY, game.getCurrentPlayerColor());
+		//}
+		// else
+		//{
+		//	std::cout << "No valid moves available for AI." << std::endl;
+		//}
+
 		game.switchTurn();
 		turnClock.restart();
 	}
@@ -145,29 +185,38 @@ void GUI::update() {
 			pieces[i][j].setFillColor(sf::Color::Transparent);
 
 	// Ghost pieces
-	if (showHints) {
+	if (showHints)
+	{
 		std::vector<std::pair<int, int>> validMoves = game.getValidMoves(game.getCurrentPlayerColor());
-		for (const auto& move : validMoves) {
+
+		for (const auto& move : validMoves)
+		{
 			int x = move.first;
 			int y = move.second;
-			if (game.getCurrentPlayerColor() == 'B') {
+			if (game.getCurrentPlayerColor() == 'B')
+			{
 				pieces[x][y].setFillColor(sf::Color(0, 0, 0, 100)); // translucent black
 			}
-			else {
+			else
+			{
 				pieces[x][y].setFillColor(sf::Color(255, 255, 255, 100)); // translucent white
 			}
 		}
 	}
 
 	// Update pieces and scores
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B') {
+			if (piece == 'B')
+			{
 				pieces[i][j].setFillColor(sf::Color::Black);
 				blackScore++;
 			}
-			else if (piece == 'W') {
+			else if (piece == 'W')
+			{
 				pieces[i][j].setFillColor(sf::Color::White);
 				whiteScore++;
 			}
@@ -185,13 +234,16 @@ void GUI::update() {
 	timerText.setPosition(centerX - timerText.getLocalBounds().width / 2, 120);
 }
 
-void GUI::render() {
+void GUI::render()
+{
 	window.clear(sf::Color(30, 30, 30));
 	window.draw(titleText);
 	window.draw(turnText);
 	window.draw(timerText);
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			window.draw(boardSquares[i][j]);
 			window.draw(pieces[i][j]);
 		}
@@ -204,11 +256,15 @@ void GUI::render() {
 	window.display();
 }
 
-void GUI::saveToFile() {
+void GUI::saveToFile()
+{
 	std::ofstream outfile("example.txt");
-	if (outfile.is_open()) {
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 8; ++j) {
+	if (outfile.is_open())
+	{
+		for (int i = 0; i < 8; ++i)
+		{
+			for (int j = 0; j < 8; ++j)
+			{
 				outfile << game.getBoard().getBoard(j, i); // column-major
 			}
 			outfile << "\n";
@@ -218,18 +274,24 @@ void GUI::saveToFile() {
 	}
 }
 
-void GUI::loadFromFile() {
+void GUI::loadFromFile()
+{
 	std::ifstream infile("example.txt");
-	if (infile.is_open()) {
+	if (infile.is_open())
+	{
 		std::string line;
 		int row = 0;
-		while (std::getline(infile, line)) {
-			if (row < 8) {
-				for (int col = 0; col < 8 && col < line.size(); ++col) {
+		while (std::getline(infile, line))
+		{
+			if (row < 8)
+			{
+				for (int col = 0; col < 8 && col < line.size(); ++col)
+				{
 					game.getBoard().setBoard(row, col, line[col]);
 				}
 			}
-			else if (row == 8 && !line.empty()) {
+			else if (row == 8 && !line.empty())
+			{
 				game.setCurrentPlayerColor(line[0]);
 			}
 			row++;
@@ -238,7 +300,10 @@ void GUI::loadFromFile() {
 	}
 }
 
-void GUI::updateHintButtonLabel() {
+void GUI::updateHintButtonLabel()
+{
+	std::cout << "Updating hint button label to: " << (showHints ? "Hints: ON" : "Hints: OFF") << std::endl;
+	hintToggleButtonText.setFont(font);
 	hintToggleButtonText.setString(showHints ? "Hints: ON" : "Hints: OFF");
 
 	// Recenter the text on the button

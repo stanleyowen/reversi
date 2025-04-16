@@ -13,7 +13,7 @@ public:
 	~Game();
 
 	void start();
-	Board& getBoard();
+	Board &getBoard();
 	bool move(int x, int y, char color);
 	bool isValidMove(int row, int col, char color) const;
 	char getCurrentPlayerColor() const;
@@ -21,12 +21,13 @@ public:
 	std::vector<std::pair<int, int>> getValidMoves(char color) const;
 	void toggleShowHints();
 	void setCurrentPlayerColor(char color);
+	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves() const;
 
 private:
 	Board board;
 	Player playerA;
 	Player playerB;
-	Player* currentPlayer;
+	Player *currentPlayer;
 
 	bool isGameOver();
 	void countPieces();
