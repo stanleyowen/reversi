@@ -2,7 +2,7 @@
 #include <fstream>
 
 // Constructor initializes window, fonts, buttons, and board layout
-GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(10.0f), showHints(true)
+GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(0.5f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf"))
 	{
@@ -270,6 +270,10 @@ void GUI::render()
 	window.draw(hintToggleButton);
 	window.draw(hintToggleButtonText);
 	window.display();
+}
+
+void GUI::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
+{
 }
 
 // Save the current board state and player turn to a file

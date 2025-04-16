@@ -11,6 +11,11 @@ Game::Game() : playerA('B'), playerB('W'), currentPlayer(&playerA) {}
 // Destructor to clean up resources if needed
 Game::~Game() {}
 
+Board& Game::getBoard()
+{
+	return board;
+}
+
 // Global timing variables
 clock_t startT, endT;
 

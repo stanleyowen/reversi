@@ -27,6 +27,7 @@ public:
 	char getColor() const { return color; };
 	int getScore() const { return score; };
 	int getPossibleMovesCount() const { return possibleMovesCount; };
+
 	std::vector<std::vector<int>> getPossibleMoves() const
 	{
 		return possibleMoves;
