@@ -11,12 +11,13 @@ Game::Game() : playerA('B'), playerB('W'), currentPlayer(&playerA) {}
 // Destructor to clean up resources if needed
 Game::~Game() {}
 
+// Global timing variables
 clock_t startT, endT;
 
 // Move the mouse to (x, y)
 void gotoxy(int x, int y)
 {
-	COORD pos = {static_cast<SHORT>(x), static_cast<SHORT>(y)};
+	COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hOut, pos);
 }
@@ -25,7 +26,7 @@ void gotoxy(int x, int y)
 void timer()
 {
 	startT = clock();
-	double sum = 10; // (seconds)
+	double sum = 10;	// Total countdown seconds
 	double time = 0.0;
 	int flag = 1;
 
@@ -60,6 +61,7 @@ void timer()
 	}
 }
 
+// Get all valid moves for the given color
 std::vector<std::pair<int, int>> Game::getValidMoves(char color) const
 {
 	std::vector<std::pair<int, int>> moves;
@@ -69,11 +71,17 @@ std::vector<std::pair<int, int>> Game::getValidMoves(char color) const
 		{
 			if (isValidMove(i, j, color))
 			{
-				moves.push_back({i, j});
+				moves.push_back({ i, j });
 			}
 		}
 	}
 	return moves;
+}
+
+// Get the current player's color
+char Game::getCurrentPlayerColor() const
+{
+	return currentPlayer->getColor();
 }
 
 // Start the Reversi game
@@ -95,6 +103,7 @@ void Game::start()
 		std::cout << "Input move (column and row respectively): ";
 		std::cin >> posX >> posY; // Get the move from the user
 
+		// Load saved game state
 		if (posX == 9 || posY == 9)
 		{
 			std::ifstream infile("example.txt");
@@ -133,11 +142,14 @@ void Game::start()
 			}
 		}
 
+		// Make a move if valid
 		if (move(posX, posY, currentPlayer->getColor()))
 		{
 			switchTurn();
 
+			// Save current game state to file
 			std::ofstream outfile("example.txt");
+
 			if (outfile.is_open())
 			{
 				for (int i = 0; i < 8; ++i)
@@ -148,6 +160,7 @@ void Game::start()
 					}
 					outfile << std::endl;
 				}
+
 				outfile << currentPlayer->getColor() << std::endl;
 				outfile.close();
 				std::cout << "File saved successfully!" << std::endl;
@@ -170,21 +183,13 @@ void Game::start()
 	displayWinner();
 }
 
-Board &Game::getBoard()
-{
-	return board;
-}
-
+// Execute a move on the board
 bool Game::move(int x, int y, char color)
 {
 	return board.move(x, y, color);
 }
 
-char Game::getCurrentPlayerColor() const
-{
-	return currentPlayer->getColor();
-}
-
+// Check if a game is over (no more valid moves can be made)
 bool Game::isGameOver()
 {
 	checkAllPossibleMoves();
@@ -214,6 +219,7 @@ bool Game::isGameOver()
 	return true;
 }
 
+// Check all valid moves for the current player and store them
 void Game::checkAllPossibleMoves()
 {
 	currentPlayer->clearPossibleMoves();
@@ -230,9 +236,10 @@ void Game::checkAllPossibleMoves()
 	}
 }
 
+// Count pieces for both players
 void Game::countPieces()
 {
-	playerA.resetScore(); // Reset scores to avoid counting previous scores
+	playerA.resetScore();
 	playerB.resetScore();
 
 	for (int row = 0; row < 8; row++)
@@ -251,6 +258,7 @@ void Game::countPieces()
 	}
 }
 
+// Display the game winner and final scores
 void Game::displayWinner()
 {
 	countPieces();
@@ -273,11 +281,13 @@ void Game::displayWinner()
 	}
 }
 
+// Switch turns between player A and B
 void Game::switchTurn()
 {
 	currentPlayer = (currentPlayer == &playerA) ? &playerB : &playerA;
 }
 
+// Validate if a move at (row, col) is legal
 bool Game::isValidMove(int row, int col, char color) const
 {
 	// If already occupied, can't move
@@ -288,8 +298,8 @@ bool Game::isValidMove(int row, int col, char color) const
 	char opponent = (color == 'B') ? 'W' : 'B';
 
 	// All 8 directions
-	const int dx[] = {-1, -1, -1, 0, 1, 1, 1, 0};
-	const int dy[] = {-1, 0, 1, 1, 1, 0, -1, -1};
+	const int dx[] = { -1, -1, -1, 0, 1, 1, 1, 0 };
+	const int dy[] = { -1, 0, 1, 1, 1, 0, -1, -1 };
 
 	for (int dir = 0; dir < 8; ++dir)
 	{
@@ -340,6 +350,7 @@ void Game::setCurrentPlayerColor(char color)
 	}
 }
 
+// Get current player's valid moves
 std::vector<std::vector<int>> Game::getCurrentPlayerPossibleMoves()
 {
 	checkAllPossibleMoves();
@@ -349,7 +360,41 @@ std::vector<std::vector<int>> Game::getCurrentPlayerPossibleMoves()
 	return currentPlayer->getPossibleMoves();
 }
 
+// Get count of valid moves for current player
 int Game::getCurrentPlayerPossibleMovesCount() const
 {
 	return currentPlayer->getPossibleMovesCount();
+}
+
+// Reset the game to initial state
+void Game::reset()
+{
+	board = Board(); // Reset the board (assumes Board() constructor sets up the 4 center pieces)
+
+	playerA.resetScore();
+	playerB.resetScore();
+
+	playerA.clearPossibleMoves();
+	playerB.clearPossibleMoves();
+
+	currentPlayer = &playerA; // Black always starts first in Reversi
+
+	std::ofstream outfile("example.txt");
+	if (outfile.is_open())
+	{
+		for (int i = 0; i < 8; ++i)
+		{
+			for (int j = 0; j < 8; ++j)
+			{
+				outfile << '.'; // Empty board
+			}
+			outfile << std::endl;
+		}
+
+		// Write initial turn
+		outfile << currentPlayer->getColor() << std::endl;
+		outfile.close();
+	}
+
+	std::cout << "Game has been reset." << std::endl;
 }

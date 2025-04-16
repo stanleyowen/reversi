@@ -12,19 +12,27 @@ public:
 	void run();
 
 private:
+	// Graphic rendering functions
 	void processEvents();
 	void update();
 	void render();
 	void handlePlayerInput(sf::Keyboard::Key key, bool isPressed);
+
+	// Save/Load file functions
 	void saveToFile();
 	void loadFromFile();
-	void updateHintButtonLabel();
+
+	// Hint system
 	void checkHints();
 	void clearHints();
-	void displayWinner();
+	void updateHintButtonLabel();
 
-	sf::RenderWindow window;
+	// Game over functions
+	void displayWinner();
+	void resetGame();
+
 	Game game;
+	sf::RenderWindow window;
 	sf::Font font;
 	sf::Text text;
 	sf::Text turnText;
@@ -33,15 +41,11 @@ private:
 	sf::Text player2NameText;
 	sf::Text titleText;
 	sf::RectangleShape boardSquares[8][8];
+
 	sf::CircleShape pieces[8][8];
 	sf::CircleShape ghostPieces[8][8];
 	int blackScore;
 	int whiteScore;
-
-	std::vector<sf::CircleShape> animatedPieces;
-	std::vector<float> animationScales;
-	sf::Clock animationClock;
-	bool isAnimating;
 
 	sf::Text timerText;
 	sf::Clock turnClock;
@@ -53,6 +57,13 @@ private:
 	bool showHints;
 	sf::RectangleShape hintToggleButton;
 	sf::Text hintToggleButtonText;
+
+	bool askPlayAgain();
+	bool showPopup;
+	sf::RectangleShape popupBox;
+	sf::Text popupText;
+	sf::RectangleShape yesButton, noButton;
+	sf::Text yesText, noText;
 };
 
 #endif // GUI_H

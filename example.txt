@@ -1,9 +1,9 @@
-  W     
-BBBB    
-  WBW   
-  BBW   
-   BWB  
-    BW  
-     BW 
-        
-W
+WWWWWWWB
+BWBBBWWB
+BBWWWWWB
+BBBWBBBB
+BBWBBWBB
+BBBWWBWB
+BBBBWWBB
+BBBBBBBB
+B

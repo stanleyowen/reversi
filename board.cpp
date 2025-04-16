@@ -1,8 +1,10 @@
 #include "Board.h"
 #include <iostream>
 
+// Define the default empty space on the board
 #define BOARD_SPACE ' '
 
+// Constructor to initialize the board and places starting pieces
 Board::Board()
 {
 	for (int i = 0; i < 8; ++i)
@@ -15,16 +17,18 @@ Board::Board()
 	showHints = false;
 }
 
+// Displays the board on console
 void Board::display() const
 {
-	std::cout << "\033[2J\033[1;1H";
-	std::cout << "  0 1 2 3 4 5 6 7\n";
+	std::cout << "\033[2J\033[1;1H";	// Clear screen
+	std::cout << "  0 1 2 3 4 5 6 7\n"; // Column headers
 
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 8; ++i) // Row numbers
 	{
 		std::cout << i << " ";
 		for (int j = 0; j < 8; ++j)
 		{
+			// Show hint dot if move is valid for either player
 			if (board[i][j] == BOARD_SPACE)
 			{
 				if (isValidMove(j, i, 'B') || isValidMove(j, i, 'W'))
@@ -34,6 +38,7 @@ void Board::display() const
 			}
 			else
 			{
+				// Show player piece
 				std::cout << board[i][j] << " ";
 			}
 		}
@@ -41,6 +46,7 @@ void Board::display() const
 	}
 }
 
+// Executes a move and flips pieces if valid
 bool Board::move(int posX, int posY, char currentPlayerColor, bool isTest)
 {
 	if (posX < 0 || posX >= 8 || posY < 0 || posY >= 8 || board[posY][posX] != BOARD_SPACE)
@@ -49,6 +55,7 @@ bool Board::move(int posX, int posY, char currentPlayerColor, bool isTest)
 	return flip(posX, posY, currentPlayerColor, isTest);
 }
 
+// Attempts to flip opponent pieces, optionally just testing validity
 bool Board::flip(int x, int y, char color, bool isTest)
 {
 	// Create a copy of the board to avoid modifying the original during the check
@@ -305,11 +312,13 @@ bool Board::flip(int x, int y, char color, bool isTest)
 	return false;
 }
 
+// Toggles hint mode
 void Board::toggleShowHints()
 {
 	showHints = !showHints;
 }
 
+// Returns a list of all valid moves for a given player
 std::vector<std::pair<int, int>> Board::getValidMoves(char currentPlayerColor) const
 {
 	std::vector<std::pair<int, int>> validMoves;
@@ -328,17 +337,18 @@ std::vector<std::pair<int, int>> Board::getValidMoves(char currentPlayerColor) c
 	return validMoves;
 }
 
+// Determines whether placing a piece at (x, y) is valid
 bool Board::isValidMove(int x, int y, char color) const
 {
 	if (x < 0 || x >= 8 || y < 0 || y >= 8 || board[y][x] != BOARD_SPACE)
 		return false;
 
 	const int directions[8][2] = {
-		{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+		{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1} };
 
 	char opponentColor = (color == 'W') ? 'B' : 'W';
 
-	for (auto &dir : directions)
+	for (auto& dir : directions)
 	{
 		int dx = dir[1], dy = dir[0];
 		int nx = x + dx, ny = y + dy;
@@ -366,6 +376,7 @@ bool Board::isValidMove(int x, int y, char color) const
 	return false;
 }
 
+// Overwrites the entire board with a new layout
 void Board::setBoard(char newBoard[8][8])
 {
 	for (int i = 0; i < 8; ++i)
@@ -373,6 +384,7 @@ void Board::setBoard(char newBoard[8][8])
 			board[i][j] = newBoard[i][j];
 }
 
+// Sets a specific cell in the board
 void Board::setBoard(int row, int col, char value)
 {
 	if (row >= 0 && row < 8 && col >= 0 && col < 8)
@@ -381,6 +393,7 @@ void Board::setBoard(int row, int col, char value)
 	}
 }
 
+// Copies current board state into outputBoard
 void Board::getBoard(char outputBoard[8][8]) const
 {
 	for (int i = 0; i < 8; ++i)

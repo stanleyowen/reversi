@@ -8,32 +8,33 @@
 class Player
 {
 private:
+	// Player's color, scores and count of valid moves
 	char color;
 	int score;
 	int possibleMovesCount;
-	std::string name;
 
-	// clang-format off
+	std::string name;
 	std::vector<std::vector<int> > possibleMoves;
-	// clang-format on
 
 public:
-	Player(char color);
+	Player(char color);								// Constructor that initializes the player with a given color
+
+	void addPossibleMove(int x, int y);				// Adds a valid move to the list of possible moves				
+	void clearPossibleMoves();						// Clears the list of possible moves
+	void displayPossibleMoves();					// Displays the possible moves
+
+	// Getters to retrieve players' info
 	char getColor() const { return color; };
 	int getScore() const { return score; };
-	void incrementScore() { score++; };
-	void resetScore() { score = 0; };
-	void setName(const std::string &playerName) { name = playerName; };
-	std::string getName() const { return name; };
-
-	void addPossibleMove(int x, int y);
-	void clearPossibleMoves();
-	void displayPossibleMoves();
 	int getPossibleMovesCount() const { return possibleMovesCount; };
 	std::vector<std::vector<int>> getPossibleMoves() const
 	{
 		return possibleMoves;
 	};
+
+	// Score manipulation
+	void incrementScore() { score++; };
+	void resetScore() { score = 0; };
 };
 
 #endif // Player_H

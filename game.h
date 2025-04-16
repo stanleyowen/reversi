@@ -5,6 +5,7 @@
 #include "Player.h"
 #include <vector>
 #include <utility>
+#include <SFML/Graphics.hpp>
 
 class Game
 {
@@ -12,21 +13,27 @@ public:
 	Game();
 	~Game();
 
-	void start();
 	Board& getBoard();
+
+	void start();
+	void setCurrentPlayerColor(char color);
+	void switchTurn();
+	void toggleShowHints();
+	void reset();
+
 	bool move(int x, int y, char color);
 	bool isValidMove(int row, int col, char color) const;
-	char getCurrentPlayerColor() const;
-	void switchTurn();
-	std::vector<std::pair<int, int>> getValidMoves(char color) const;
-	void toggleShowHints();
-	void setCurrentPlayerColor(char color);
-	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
-	int getCurrentPlayerPossibleMovesCount() const;
 	bool isGameOver();
+
+	int getCurrentPlayerPossibleMovesCount() const;
+	char getCurrentPlayerColor() const;
+
+	std::vector<std::vector<int>> getCurrentPlayerPossibleMoves();
+	std::vector<std::pair<int, int>> getValidMoves(char color) const;
 
 private:
 	Board board;
+
 	Player playerA;
 	Player playerB;
 	Player* currentPlayer;
