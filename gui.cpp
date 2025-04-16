@@ -17,10 +17,10 @@ void GUI::animatePiecePlacement(int x, int y, sf::Color color)
 	// Adjust the position to account for the origin shift
 	animatedPiece.setPosition(piecePosition.x + animatedPiece.getRadius(), piecePosition.y + animatedPiece.getRadius());
 
-	float scale = 0.1f;				   // Start with a small scale
-	const float maxScale = 1.0f;	   // Target scale
-	const float animationSpeed = 0.3f; // Speed of the animation (adjusted for 0.5s duration)
-	const int frameDelay = 5;		   // Delay in milliseconds for smoother animation
+	float scale = 0.1f;					// Start with a small scale
+	const float maxScale = 1.0f;		// Target scale
+	const float animationSpeed = 0.05f; // Speed of the animation (adjusted for 0.05s duration)
+	const int frameDelay = 5;			// Delay in milliseconds for smoother animation
 
 	// Calculate the number of frames for the animation
 	int totalFrames = static_cast<int>((maxScale - scale) / animationSpeed);
@@ -32,37 +32,8 @@ void GUI::animatePiecePlacement(int x, int y, sf::Color color)
 		scale += animationSpeed; // Gradually increase the scale
 		animatedPiece.setScale(scale, scale);
 
-		// Clear and redraw the window
-		window.clear(sf::Color(30, 30, 30));
-		window.draw(titleText);
-		window.draw(turnText);
-		window.draw(timerText);
-
-		// Redraw the board and pieces
-		for (int i = 0; i < 8; ++i)
-		{
-			for (int j = 0; j < 8; ++j)
-			{
-				window.draw(boardSquares[i][j]);
-				if (i == x && j == y)
-				{
-					// Draw the animated piece instead of the static one
-					window.draw(animatedPiece);
-				}
-				else
-				{
-					window.draw(pieces[i][j]);
-				}
-			}
-		}
-
-		// Draw UI elements
-		window.draw(scoreText);
-		window.draw(loadButton);
-		window.draw(loadButtonText);
-		window.draw(hintToggleButton);
-		window.draw(hintToggleButtonText);
-
+		// Redraw only the animated piece on top of the current frame
+		window.draw(animatedPiece);
 		window.display();
 	}
 
@@ -368,10 +339,12 @@ void GUI::render()
 		bool playAgain = askPlayAgain();
 
 		// If yes, reset the game; else, close the window
-		if (playAgain) {
+		if (playAgain)
+		{
 			resetGame();
 		}
-		else {
+		else
+		{
 			window.close();
 		}
 
@@ -437,7 +410,7 @@ void GUI::checkHints()
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
-	for (const auto& move : possibleMoves)
+	for (const auto &move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
@@ -594,15 +567,20 @@ void GUI::displayWinner()
 		for (int j = 0; j < 8; ++j)
 		{
 			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B') blackScore++;
-			else if (piece == 'W') whiteScore++;
+			if (piece == 'B')
+				blackScore++;
+			else if (piece == 'W')
+				whiteScore++;
 		}
 	}
 
 	std::string winner;
-	if (blackScore > whiteScore) winner = "Black wins!";
-	else if (whiteScore > blackScore) winner = "White wins!";
-	else winner = "It's a tie!";
+	if (blackScore > whiteScore)
+		winner = "Black wins!";
+	else if (whiteScore > blackScore)
+		winner = "White wins!";
+	else
+		winner = "It's a tie!";
 
 	// Create popup window
 	sf::RenderWindow popup(sf::VideoMode(400, 250), "Game Over");

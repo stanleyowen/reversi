@@ -38,12 +38,4 @@ void Player::displayPossibleMoves()
 	{
 		std::cout << "No possible moves available.\n";
 	}
-	else
-	{
-		for (int i = 0; i < possibleMovesCount; i++)
-		{
-
-		}
-		std::cout << "\n";
-	}
 }
