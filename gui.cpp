@@ -1,4 +1,4 @@
-﻿#include "gui.h"
+#include "gui.h"
 #include <fstream>
 
 GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(10.0f), showHints(true)
