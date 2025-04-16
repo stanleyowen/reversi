@@ -67,6 +67,7 @@ A classic Reversi (Othello) board game implementation using **C++** and **SFML (
 
 ---
 
+<details> <summary>Click to expand</summary>
 ## 🧩 Project Structure
 Reversi/
 ├── arial.ttf               # Font used in GUI
@@ -80,6 +81,7 @@ Reversi/
 ├── main.cpp                # Main entry point
 ├── player.cpp              # Player info and AI (if any)
 ├── player.h                # Header file for Player class
+</details>
 
 ---
 
