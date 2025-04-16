@@ -3,7 +3,7 @@
 #include <fstream>
 
 // Constructor initializes window, fonts, buttons, and board layout
-GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(0.01f), showHints(true)
+GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(20.0f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf"))
 	{
@@ -146,21 +146,26 @@ void GUI::processEvents()
 
 				if (x >= 0 && x < 8 && y >= 0 && y < 8)
 				{
-					// If move is valid, make move and switch turn
-					if (game.move(x, y, game.getCurrentPlayerColor()))
+					// Get the current player's count of valid moves
+					int possibleMovesCount = game.getCurrentPlayerPossibleMovesCount();
+
+					if (possibleMovesCount == 0)
 					{
-						saveToFile(); // Save the game state
-
-						// Switch turn to the next player if the game is not over
-						game.switchTurn();
-
-						// Update hints if enabled
-						if (showHints)
-						{
-							checkHints();
-						}
-
+						std::cout << "No valid moves available for the current player." << showHints << std::endl;
+						game.switchTurn(); // Switch turn if no moves available
 						turnClock.restart();
+					}
+					else
+					{
+						// If move is valid, make move and switch turn
+						if (game.move(x, y, game.getCurrentPlayerColor()))
+						{
+							saveToFile(); // Save the game state
+
+							// Switch turn to the next player if the game is not over
+							game.switchTurn();
+							turnClock.restart();
+						}
 					}
 				}
 			}
@@ -198,11 +203,6 @@ void GUI::update()
 			{
 				saveToFile();
 				game.switchTurn();
-
-				if (showHints)
-				{
-					checkHints();
-				}
 			}
 			std::cout << "Random move made by " << game.getCurrentPlayerColor() << ": (" << x << ", " << y << ")" << std::endl;
 		}
@@ -276,18 +276,15 @@ void GUI::render()
 	window.draw(hintToggleButtonText);
 	window.display();
 
+	if (showHints)
+	{
+		checkHints(); // Update hints if enabled
+	}
+
+	// Check if the game is over
 	if (game.isGameOver())
 	{
-		std::cout << "Game over has been called." << std::endl;
-
-		// Show winner in a small popup
-		displayWinner();
-
-		// Ask if the player wants to play again after the winner popup is closed
-		bool playAgain = askPlayAgain();
-
-		// If yes, reset the game; else, close the window
-		if (playAgain)
+		if (askPlayAgain())
 		{
 			resetGame();
 		}
@@ -357,8 +354,9 @@ void GUI::checkHints()
 
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
+	std::cout << "Hints updated for player: " << game.getCurrentPlayerColor() << std::endl;
 
-	for (const auto& move : possibleMoves)
+	for (const auto &move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
@@ -515,15 +513,20 @@ void GUI::displayWinner()
 		for (int j = 0; j < 8; ++j)
 		{
 			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B') blackScore++;
-			else if (piece == 'W') whiteScore++;
+			if (piece == 'B')
+				blackScore++;
+			else if (piece == 'W')
+				whiteScore++;
 		}
 	}
 
 	std::string winner;
-	if (blackScore > whiteScore) winner = "Black wins!";
-	else if (whiteScore > blackScore) winner = "White wins!";
-	else winner = "It's a tie!";
+	if (blackScore > whiteScore)
+		winner = "Black wins!";
+	else if (whiteScore > blackScore)
+		winner = "White wins!";
+	else
+		winner = "It's a tie!";
 
 	// Create popup window
 	sf::RenderWindow popup(sf::VideoMode(400, 250), "Game Over");

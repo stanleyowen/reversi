@@ -11,7 +11,7 @@ Game::Game() : playerA('B'), playerB('W'), currentPlayer(&playerA) {}
 // Destructor to clean up resources if needed
 Game::~Game() {}
 
-Board& Game::getBoard()
+Board &Game::getBoard()
 {
 	return board;
 }
@@ -22,7 +22,7 @@ clock_t startT, endT;
 // Move the mouse to (x, y)
 void gotoxy(int x, int y)
 {
-	COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+	COORD pos = {static_cast<SHORT>(x), static_cast<SHORT>(y)};
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hOut, pos);
 }
@@ -31,7 +31,7 @@ void gotoxy(int x, int y)
 void timer()
 {
 	startT = clock();
-	double sum = 10;	// Total countdown seconds
+	double sum = 10; // Total countdown seconds
 	double time = 0.0;
 	int flag = 1;
 
@@ -76,7 +76,7 @@ std::vector<std::pair<int, int>> Game::getValidMoves(char color) const
 		{
 			if (isValidMove(i, j, color))
 			{
-				moves.push_back({ i, j });
+				moves.push_back({i, j});
 			}
 		}
 	}
@@ -303,8 +303,8 @@ bool Game::isValidMove(int row, int col, char color) const
 	char opponent = (color == 'B') ? 'W' : 'B';
 
 	// All 8 directions
-	const int dx[] = { -1, -1, -1, 0, 1, 1, 1, 0 };
-	const int dy[] = { -1, 0, 1, 1, 1, 0, -1, -1 };
+	const int dx[] = {-1, -1, -1, 0, 1, 1, 1, 0};
+	const int dy[] = {-1, 0, 1, 1, 1, 0, -1, -1};
 
 	for (int dir = 0; dir < 8; ++dir)
 	{
