@@ -300,7 +300,7 @@ void GUI::render()
 // Save the current board state and player turn to a file
 void GUI::saveToFile()
 {
-	std::ofstream outfile("example.txt");
+	std::ofstream outfile("db-reversi.txt");
 	if (outfile.is_open())
 	{
 		// Save each row of the board
@@ -321,7 +321,7 @@ void GUI::saveToFile()
 // Load in the saved file
 void GUI::loadFromFile()
 {
-	std::ifstream infile("example.txt");
+	std::ifstream infile("db-reversi.txt");
 	if (infile.is_open())
 	{
 		std::string line;

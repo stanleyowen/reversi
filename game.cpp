@@ -111,7 +111,7 @@ void Game::start()
 		// Load saved game state
 		if (posX == 9 || posY == 9)
 		{
-			std::ifstream infile("example.txt");
+			std::ifstream infile("db-reversi.txt");
 			if (infile.is_open())
 			{
 				std::string line;
@@ -153,7 +153,7 @@ void Game::start()
 			switchTurn();
 
 			// Save current game state to file
-			std::ofstream outfile("example.txt");
+			std::ofstream outfile("db-reversi.txt");
 
 			if (outfile.is_open())
 			{
@@ -384,7 +384,7 @@ void Game::reset()
 
 	currentPlayer = &playerA; // Black always starts first in Reversi
 
-	std::ofstream outfile("example.txt");
+	std::ofstream outfile("db-reversi.txt");
 	if (outfile.is_open())
 	{
 		for (int i = 0; i < 8; ++i)
