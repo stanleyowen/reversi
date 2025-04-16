@@ -2,7 +2,7 @@
 #include <fstream>
 
 // Constructor initializes window, fonts, buttons, and board layout
-GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(0.5f), showHints(true)
+GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(0.01f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf"))
 	{
@@ -97,6 +97,21 @@ void GUI::run()
 		processEvents();
 		update();
 		render();
+
+		// Check if the game is over
+		if (game.isGameOver())
+		{
+			std::cout << "game over is called" << std::endl;
+			if (askPlayAgain())
+			{
+				resetGame();
+			}
+			else
+			{
+				displayWinner();
+			}
+			return;
+		}
 	}
 }
 
@@ -148,15 +163,18 @@ void GUI::processEvents()
 					// If move is valid, make move and switch turn
 					if (game.move(x, y, game.getCurrentPlayerColor()))
 					{
+						saveToFile(); // Save the game state
+
+						// Switch turn to the next player if the game is not over
 						game.switchTurn();
-						saveToFile();			// Save the game state
-						turnClock.restart();
 
 						// Update hints if enabled
 						if (showHints)
 						{
 							checkHints();
 						}
+
+						turnClock.restart();
 					}
 				}
 			}
@@ -166,7 +184,7 @@ void GUI::processEvents()
 			// Pressing 'H' will toggle the hints
 			if (event.key.code == sf::Keyboard::H)
 			{
-				showHints = !showHints;  // Toggle show hint state
+				showHints = !showHints;	 // Toggle show hint state
 				updateHintButtonLabel(); // Update the label when toggling
 			}
 		}
@@ -179,41 +197,36 @@ void GUI::update()
 	float remaining = turnTimeLimit - turnClock.getElapsedTime().asSeconds();
 
 	// If time is up, make a random move for the current player
-	if (remaining <= 0) {
+	if (remaining <= 0)
+	{
 		std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 		int possibleMovesCount = game.getCurrentPlayerPossibleMovesCount();
 
-		if (possibleMovesCount != 0) {
+		if (possibleMovesCount != 0)
+		{
 			int randomIndex = rand() % possibleMovesCount;
 			int x = possibleMoves[randomIndex][0];
 			int y = possibleMoves[randomIndex][1];
 
-			if (game.move(x, y, game.getCurrentPlayerColor())) {
+			if (game.move(x, y, game.getCurrentPlayerColor()))
+			{
 				saveToFile();
 				game.switchTurn();
 
-				if (showHints) {
+				if (showHints)
+				{
 					checkHints();
 				}
 			}
 			std::cout << "Random move made by " << game.getCurrentPlayerColor() << ": (" << x << ", " << y << ")" << std::endl;
 		}
-		else {
+		else
+		{
 			game.switchTurn();
 			std::cout << "No valid moves available for the current player." << std::endl;
 		}
-		turnClock.restart();
-	}
 
-	// Check if the game is over
-	if (game.isGameOver()) {
-		if (askPlayAgain()) {
-			resetGame();
-		}
-		else {
-			displayWinner();
-		}
-		return;
+		turnClock.restart();
 	}
 
 	// Update the timer text
@@ -222,14 +235,18 @@ void GUI::update()
 	whiteScore = 0;
 
 	// Update pieces and scores
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			char piece = game.getBoard().getBoard(i, j);
-			if (piece == 'B') {
+			if (piece == 'B')
+			{
 				pieces[i][j].setFillColor(sf::Color::Black);
 				blackScore++;
 			}
-			else if (piece == 'W') {
+			else if (piece == 'W')
+			{
 				pieces[i][j].setFillColor(sf::Color::White);
 				whiteScore++;
 			}
@@ -256,8 +273,10 @@ void GUI::render()
 	window.draw(timerText);
 
 	// Render the board tiles and pieces
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			window.draw(boardSquares[i][j]);
 			window.draw(pieces[i][j]); // Render both normal and ghost pieces
 		}
@@ -425,8 +444,8 @@ void GUI::displayWinner()
 
 	// Create a background rectangle for the heading
 	sf::RectangleShape headingBox(sf::Vector2f(gameOverText.getLocalBounds().width + 20, gameOverText.getLocalBounds().height + 30));
-	headingBox.setFillColor(sf::Color(50, 50, 50, 200));  // Semi-transparent dark background
-	headingBox.setPosition((window.getSize().x - headingBox.getSize().x) / 2, 50);  // Centered at top
+	headingBox.setFillColor(sf::Color(50, 50, 50, 200));						   // Semi-transparent dark background
+	headingBox.setPosition((window.getSize().x - headingBox.getSize().x) / 2, 50); // Centered at top
 
 	// Center the game over text inside the heading box
 	gameOverText.setPosition((window.getSize().x - gameOverText.getLocalBounds().width) / 2, 50 + (headingBox.getSize().y - gameOverText.getLocalBounds().height) / 2);
@@ -463,11 +482,11 @@ void GUI::displayWinner()
 			}
 		}
 
-		window.clear(sf::Color(30, 30, 30));  // Dark background color
-		window.draw(headingBox);  // Draw the heading box
-		window.draw(gameOverText);  // Draw the Game Over text
-		window.draw(scoreText);  // Draw the score text
-		window.draw(winnerTextDisplay);  // Draw the winner text
+		window.clear(sf::Color(30, 30, 30)); // Dark background color
+		window.draw(headingBox);			 // Draw the heading box
+		window.draw(gameOverText);			 // Draw the Game Over text
+		window.draw(scoreText);				 // Draw the score text
+		window.draw(winnerTextDisplay);		 // Draw the winner text
 		window.display();
 	}
 }
@@ -477,7 +496,8 @@ bool GUI::askPlayAgain()
 	// Open a new mini window asking the user if they want to play again
 	sf::RenderWindow popup(sf::VideoMode(400, 200), "Game Over");
 	sf::Font font;
-	if (!font.loadFromFile("arial.ttf")) {
+	if (!font.loadFromFile("arial.ttf"))
+	{
 		return false;
 	}
 
@@ -503,20 +523,26 @@ bool GUI::askPlayAgain()
 	noText.setPosition(280, 125);
 
 	// Handle user input by mouse clicks
-	while (popup.isOpen()) {
+	while (popup.isOpen())
+	{
 		sf::Event event;
-		while (popup.pollEvent(event)) {
-			if (event.type == sf::Event::Closed) {
+		while (popup.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
 				popup.close();
 				return false;
 			}
-			else if (event.type == sf::Event::MouseButtonPressed) {
+			else if (event.type == sf::Event::MouseButtonPressed)
+			{
 				sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-				if (yesButton.getGlobalBounds().contains(mousePos)) {
+				if (yesButton.getGlobalBounds().contains(mousePos))
+				{
 					popup.close();
 					return true;
 				}
-				else if (noButton.getGlobalBounds().contains(mousePos)) {
+				else if (noButton.getGlobalBounds().contains(mousePos))
+				{
 					popup.close();
 					return false;
 				}
@@ -542,8 +568,10 @@ void GUI::resetGame()
 	turnClock.restart();
 
 	// Reset piece colors and hint markers
-	for (int i = 0; i < 8; ++i) {
-		for (int j = 0; j < 8; ++j) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
 			pieces[i][j].setFillColor(sf::Color::Transparent);
 			ghostPieces[i][j].setFillColor(sf::Color::Transparent);
 		}
@@ -559,7 +587,8 @@ void GUI::resetGame()
 	// Save new empty board state
 	saveToFile();
 
-	if (showHints) {
+	if (showHints)
+	{
 		checkHints();
 	}
 }
