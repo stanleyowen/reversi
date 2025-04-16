@@ -101,7 +101,7 @@ void GUI::checkHints()
 
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
-	for (const auto &move : possibleMoves)
+	for (const auto& move : possibleMoves)
 	{
 		int x = move[0],
 			y = move[1];
@@ -219,6 +219,7 @@ void GUI::update()
 			if (game.move(x, y, game.getCurrentPlayerColor()))
 			{
 				saveToFile();
+				game.switchTurn();
 
 				// Reset all ghost pieces
 				// Ghost pieces
@@ -229,14 +230,13 @@ void GUI::update()
 			}
 
 			std::cout << "Random move made by " << game.getCurrentPlayerColor() << ": (" << x << ", " << y << ")" << std::endl;
-			saveToFile();
 		}
 		else
 		{
+			game.switchTurn();
 			std::cout << "No valid moves available for the current player." << std::endl;
 		}
 
-		game.switchTurn();
 		turnClock.restart();
 	}
 
