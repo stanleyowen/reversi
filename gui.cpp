@@ -42,7 +42,7 @@ void GUI::animatePiecePlacement(int x, int y, sf::Color color)
 }
 
 // Constructor initializes window, fonts, buttons, and board layout
-GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(5.0f), showHints(true)
+GUI::GUI() : window(sf::VideoMode(1000, 1000), "Reversi"), blackScore(0), whiteScore(0), turnTimeLimit(21.0f), showHints(true)
 {
 	if (!font.loadFromFile("Arial.ttf"))
 	{
@@ -410,7 +410,7 @@ void GUI::checkHints()
 	// Get valid moves for the current player
 	std::vector<std::vector<int>> possibleMoves = game.getCurrentPlayerPossibleMoves();
 
-	for (const auto &move : possibleMoves)
+	for (const auto& move : possibleMoves)
 	{
 		// Ensure move is inside bounds
 		int x = move[0], y = move[1];
